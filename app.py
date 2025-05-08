@@ -3,7 +3,7 @@ import yaml
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 from datetime import date
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2.service_account import Credentials
 import gspread
 
 # Load config from secrets
