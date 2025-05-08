@@ -1,45 +1,36 @@
 import streamlit as st
 import yaml
-from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 from datetime import date
 import gspread
 from google.oauth2.service_account import Credentials
 
-# --- Load Auth Config from Streamlit Secrets ---
+# --- Load credentials from secrets ---
 config = yaml.safe_load(st.secrets["auth"]["config"])
 
-# --- Setup authentication ---
+# --- Set up authentication ---
 authenticator = stauth.Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days']
+    credentials=config['credentials'],
+    cookie_name=config['cookie']['name'],
+    key=config['cookie']['key'],
+    expiry_days=config['cookie']['expiry_days']
 )
 
-# --- Title ---
-st.title("📒 Expense Tracker")
-
 # --- Login ---
-name, authentication_status, username = authenticator.login(location='main', form_name='Login')
+name, authentication_status, username = authenticator.login("Login", location="main")
 
 if authentication_status:
     st.success(f"👋 Welcome, {name}!")
-    authenticator.logout('Logout', 'main')
+    authenticator.logout("Logout", location="main")
 
-    # --- Page Navigation ---
     page = st.radio("Go to", ["Home", "Add Expense", "Reports"], horizontal=True)
 
     @st.cache_resource
     def get_gspread_client():
         creds_dict = st.secrets["connections"]["expense"]
-        scope = [
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
-        client = gspread.authorize(creds)
-        return client
+        scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+        creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+        return gspread.authorize(creds)
 
     def insert_data(client, spreadsheet_id, sheet_name, data):
         sheet = client.open_by_key(spreadsheet_id).worksheet(sheet_name)
@@ -50,7 +41,6 @@ if authentication_status:
         sheet.update_cell(next_row, 6, data[3])  # Items
         return next_row
 
-    # --- Expense Form ---
     if page == "Add Expense":
         with st.form("expense_form"):
             st.subheader("Enter Expense Details")
@@ -62,7 +52,7 @@ if authentication_status:
                 "Egg", "Personal wellness", "Others"
             ))
             expense = st.text_input("💸 Expense")
-            items = st.text_input("🎩 Items")
+            items = st.text_input("🛒 Items")
             submit = st.form_submit_button("Submit")
 
         if submit:
@@ -72,19 +62,16 @@ if authentication_status:
                 st.error("❌ Please fill in all fields.")
             else:
                 client = get_gspread_client()
-                spreadsheet_id = "1WZdCZkGldtU2SgACrThKUFhaemRWwqYwuCVKwF1402g"
-                sheet_name = "May_2025"
-                row = insert_data(client, spreadsheet_id, sheet_name, [formatted_date, category, expense, items])
+                sheet_id = "1WZdCZkGldtU2SgACrThKUFhaemRWwqYwuCVKwF1402g"
+                row = insert_data(client, sheet_id, "May_2025", [formatted_date, category, expense, items])
                 st.success(f"✅ Data inserted successfully into row {row}.")
 
     elif page == "Home":
         st.write("🏠 Welcome to the Expense Tracker home page.")
-
     elif page == "Reports":
         st.write("📊 Reports page is under construction.")
 
 elif authentication_status is False:
-    st.error("❌ Username/password is incorrect")
-
+    st.error("❌ Incorrect username or password.")
 elif authentication_status is None:
-    st.info("🔐 Please enter your username and password")
+    st.warning("🔐 Please enter your credentials to continue.")
