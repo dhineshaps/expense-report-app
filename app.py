@@ -6,6 +6,11 @@ from datetime import date
 import gspread
 from google.oauth2.service_account import Credentials
 
+left_co, cent_co,last_co = st.columns(3)
+with cent_co:
+      new_title = '<p style="font-family:fantasy; color:#DAA520; font-size: 42px;">The FET Quest</p>'
+      st.markdown(new_title, unsafe_allow_html=True)
+
 
 footer="""<style>
 #MainMenu {visibility: hidden; }
