@@ -4,7 +4,7 @@ from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 from datetime import date
 import gspread
-from google.oauth2.service_account import Credentials  # Updated import
+from google.oauth2.service_account import Credentials
 
 # --- Load Auth Config from Streamlit Secrets ---
 config = yaml.safe_load(st.secrets["auth"]["config"])
@@ -21,7 +21,7 @@ authenticator = stauth.Authenticate(
 st.title("📒 Expense Tracker")
 
 # --- Login ---
-name, authentication_status, username = authenticator.login('Login', location='main')
+name, authentication_status, username = authenticator.login(location='main', form_name='Login')
 
 if authentication_status:
     st.success(f"👋 Welcome, {name}!")
@@ -33,7 +33,10 @@ if authentication_status:
     @st.cache_resource
     def get_gspread_client():
         creds_dict = st.secrets["connections"]["expense"]
-        scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+        scope = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
         creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
         client = gspread.authorize(creds)
         return client
@@ -59,7 +62,7 @@ if authentication_status:
                 "Egg", "Personal wellness", "Others"
             ))
             expense = st.text_input("💸 Expense")
-            items = st.text_input("🛒 Items")
+            items = st.text_input("🎩 Items")
             submit = st.form_submit_button("Submit")
 
         if submit:
@@ -85,6 +88,3 @@ elif authentication_status is False:
 
 elif authentication_status is None:
     st.info("🔐 Please enter your username and password")
-
-else:
-    st.warning("Login could not be initialized. Please check your configuration.")
