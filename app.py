@@ -1,70 +1,78 @@
 import streamlit as st
 import yaml
+from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 from datetime import date
+from oauth2client.service_account import ServiceAccountCredentials
 import gspread
-from google.oauth2.service_account import Credentials
 
-# --- Load credentials from secrets ---
+# Load config from secrets
 config = yaml.safe_load(st.secrets["auth"]["config"])
 
-# --- Set up authentication ---
+# Setup authentication
 authenticator = stauth.Authenticate(
-    credentials=config['credentials'],
-    cookie_name=config['cookie']['name'],
-    key=config['cookie']['key'],
-    expiry_days=config['cookie']['expiry_days']
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days'],
+    config.get('preauthorized', {})
 )
 
-# --- Login ---
-name, authentication_status, username = authenticator.login("Login", location="main")
+# --- Page selection ---
+page = st.radio("Go to", ["Home", "Add Expense", "Reports"], horizontal=True)
 
+# --- Login ---
+st.title("📒 Expense Tracker")
+name, authentication_status, username = authenticator.login("Login", location="main")  # <- FIXED login line
+
+# --- Main Logic ---
 if authentication_status:
     st.success(f"👋 Welcome, {name}!")
     authenticator.logout("Logout", location="main")
 
-    page = st.radio("Go to", ["Home", "Add Expense", "Reports"], horizontal=True)
-
     @st.cache_resource
     def get_gspread_client():
         creds_dict = st.secrets["connections"]["expense"]
-        scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-        creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
-        return gspread.authorize(creds)
+        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+        client = gspread.authorize(creds)
+        return client
 
     def insert_data(client, spreadsheet_id, sheet_name, data):
         sheet = client.open_by_key(spreadsheet_id).worksheet(sheet_name)
         next_row = len(sheet.get_all_values()) + 1
-        sheet.update_cell(next_row, 3, data[0])  # Date
-        sheet.update_cell(next_row, 4, data[1])  # Category
-        sheet.update_cell(next_row, 5, data[2])  # Expense
-        sheet.update_cell(next_row, 6, data[3])  # Items
+        sheet.update_cell(next_row, 3, data[0])
+        sheet.update_cell(next_row, 4, data[1])
+        sheet.update_cell(next_row, 5, data[2])
+        sheet.update_cell(next_row, 6, data[3])
         return next_row
 
+    # --- Form Logic ---
     if page == "Add Expense":
         with st.form("expense_form"):
             st.subheader("Enter Expense Details")
-            date_input = st.date_input("📅 Date", value=date.today())
-            formatted_date = date_input.strftime("%d-%m-%Y")
-            category = st.selectbox("📂 Category", (
+            Date = st.date_input("📅 Date", value=date.today())
+            col1 = Date.strftime("%d-%m-%Y")
+            col2 = st.selectbox("📂 Category", (
                 "Grocery", "Vegetables", "Fruits", "Gas", "Snacks", "Entertainment",
                 "Tickets", "Rent", "Home Maint", "Tea and Snacks", "Food", "Non-Veg",
                 "Egg", "Personal wellness", "Others"
             ))
-            expense = st.text_input("💸 Expense")
-            items = st.text_input("🛒 Items")
+            col3 = st.text_input("💸 Expense")
+            col4 = st.text_input("🛒 Items")
             submit = st.form_submit_button("Submit")
 
         if submit:
-            if not expense.replace('.', '', 1).isdigit():
-                st.error("💡 Expense should be a numeric value.")
-            elif not (formatted_date and category and expense and items):
+            if not col3.replace('.', '', 1).isdigit():
+                st.error("Expense should be a numeric value. Please re-enter the correct value.")
+            elif not (col1 and col2 and col3 and col4):
                 st.error("❌ Please fill in all fields.")
             else:
                 client = get_gspread_client()
-                sheet_id = "1WZdCZkGldtU2SgACrThKUFhaemRWwqYwuCVKwF1402g"
-                row = insert_data(client, sheet_id, "May_2025", [formatted_date, category, expense, items])
-                st.success(f"✅ Data inserted successfully into row {row}.")
+                spreadsheet_id = "1WZdCZkGldtU2SgACrThKUFhaemRWwqYwuCVKwF1402g"
+                sheet_name = "May_2025"
+                next_row = insert_data(client, spreadsheet_id, sheet_name, [col1, col2, col3, col4])
+                st.success(f"✅ Data inserted successfully into row {next_row}.")
 
     elif page == "Home":
         st.write("🏠 Welcome to the Expense Tracker home page.")
@@ -72,6 +80,6 @@ if authentication_status:
         st.write("📊 Reports page is under construction.")
 
 elif authentication_status is False:
-    st.error("❌ Incorrect username or password.")
+    st.error("❌ Username/password is incorrect")
 elif authentication_status is None:
-    st.warning("🔐 Please enter your credentials to continue.")
+    st.info("🔐 Please enter your username and password")
