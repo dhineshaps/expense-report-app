@@ -6,7 +6,6 @@ from datetime import date
 import gspread
 from google.oauth2.service_account import Credentials
 
-st.write(stauth.__version__)
 
 # --- Load Auth Config ---
 config = yaml.safe_load(st.secrets["auth"]["config"])
