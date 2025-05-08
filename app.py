@@ -20,10 +20,7 @@ authenticator = stauth.Authenticate(
 # --- Title and Login ---
 st.title("📒 Expense Tracker")
 
-name, authentication_status, username = authenticator.login(
-    location='main', 
-    form_name='Login'
-)
+name, authentication_status, username = authenticator.login('Login', 'main')
 
 # --- Authenticated Logic ---
 if authentication_status:
