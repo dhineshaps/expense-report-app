@@ -1,4 +1,3 @@
 streamlit
 streamlit_authenticator
-oauth2client.service_account
 gspread
