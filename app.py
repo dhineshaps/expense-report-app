@@ -23,7 +23,7 @@ page = st.radio("Go to", ["Home", "Add Expense", "Reports"], horizontal=True)
 
 # --- Login ---
 st.title("📒 Expense Tracker")
-name, authentication_status, username = authenticator.login("Login", location="main")  # <- FIXED login line
+name, authentication_status, username = authenticator.login(location="main")
 
 # --- Main Logic ---
 if authentication_status:
