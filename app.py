@@ -28,6 +28,7 @@ text-align: center;
 <p>Developed with ❤️ By The FET Quest<a style='display: block; text-align: center</p>
 </div>
 """
+st.markdown(footer,unsafe_allow_html=True)
 
 # --- Load Auth Config ---
 config = yaml.safe_load(st.secrets["auth"]["config"])
