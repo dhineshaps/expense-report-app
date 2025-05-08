@@ -24,7 +24,7 @@ page = st.radio("Go to", ["Home", "Add Expense", "Reports"], horizontal=True)
 st.title("📒 Expense Tracker")
 
 # --- Login ---
-name, authentication_status, username = authenticator.login('Login', 'main')
+name, authentication_status, username = authenticator.login('main', 'Login')
 
 if authentication_status:
     st.success(f"👋 Welcome, {name}!")
