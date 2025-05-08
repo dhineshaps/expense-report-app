@@ -7,6 +7,23 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 
+footer="""<style>
+#MainMenu {visibility: hidden; }
+.footer {
+position: fixed;
+left: 0;
+bottom: 0;
+width: 100%;
+background-color: white;
+color: black;
+text-align: center;
+}
+</style>
+<div class="footer">
+<p>Developed with ❤️ By The FET Quest<a style='display: block; text-align: center</p>
+</div>
+"""
+
 # --- Load Auth Config ---
 config = yaml.safe_load(st.secrets["auth"]["config"])
 
