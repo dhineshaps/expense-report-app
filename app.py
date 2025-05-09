@@ -83,15 +83,15 @@ if authentication_status:
     if page == "Add Home Expense":
         with st.form("expense_form"):
             st.subheader("Enter Expense Details")
-            date_input = st.date_input("📅 Date", value=date.today())
+            date_input = st.date_input("📅 Date", value=date.today(), key="date_input")
             formatted_date = date_input.strftime("%d-%m-%Y")
             category = st.selectbox("📂 Category", (
                 "Grocery", "Vegetables", "Fruits", "Gas", "Snacks", "Entertainment",
                 "Tickets", "Rent", "Home Maint", "Tea and Snacks", "Food", "Non-Veg",
                 "Egg", "Personal wellness", "Others"
-            ))
-            expense = st.text_input("💸 Expense in Rs.")
-            items = st.text_input("🛒 Items")
+            ), key="category_input")
+            expense = st.text_input("💸 Expense in Rs." , key="expense_input")
+            items = st.text_input("🛒 Items", key="items_input")
             submit = st.form_submit_button("Submit")
             reset = st.form_submit_button("Reset")
 
