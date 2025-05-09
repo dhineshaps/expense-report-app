@@ -6,6 +6,14 @@ from datetime import date
 import gspread
 from google.oauth2.service_account import Credentials
 
+if "reset_triggered" in st.session_state and st.session_state.reset_triggered:
+    st.session_state.expense_input = ""
+    st.session_state.items_input = ""
+    st.session_state.category_input = "Grocery"
+    st.session_state.date_input = date.today()
+    st.session_state.reset_triggered = False
+    st.rerun()
+
 left_co, cent_co,last_co = st.columns(3)
 with cent_co:
       new_title = '<p style="font-family:fantasy; color:#DAA520; font-size: 42px;">The FET Quest</p>'
@@ -28,7 +36,7 @@ text-align: center;
 <p>Developed with ❤️ By The FET Quest<a style='display: block; text-align: center</p>
 </div>
 """
-st.markdown(footer,unsafe_allow_html=True)
+#st.markdown(footer,unsafe_allow_html=True)
 
 # --- Load Auth Config ---
 config = yaml.safe_load(st.secrets["auth"]["config"])
@@ -82,9 +90,10 @@ if authentication_status:
                 "Tickets", "Rent", "Home Maint", "Tea and Snacks", "Food", "Non-Veg",
                 "Egg", "Personal wellness", "Others"
             ))
-            expense = st.text_input("💸 Expense")
+            expense = st.text_input("💸 Expense in Rs.")
             items = st.text_input("🛒 Items")
             submit = st.form_submit_button("Submit")
+            reset = st.form_submit_button("Reset")
 
         if submit:
             if not expense.replace('.', '', 1).isdigit():
@@ -97,6 +106,9 @@ if authentication_status:
                 sheet_name = "May_2025"
                 row = insert_data(client, spreadsheet_id, sheet_name, [formatted_date, category, expense, items])
                 st.success(f"✅ Data inserted successfully into row {row}.")
+        if reset:
+            st.session_state.reset_triggered = True
+            st.rerun()
 
     elif page == "Reports":
         st.write("📊 Reports page is under construction.")
