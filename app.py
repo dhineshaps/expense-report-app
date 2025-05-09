@@ -52,7 +52,8 @@ if authentication_status:
     authenticator.logout('Logout', 'main')
 
     # --- Page Navigation ---
-    page = st.radio("Go to", ["Home", "Add Expense", "Reports"], horizontal=True)
+    #page = st.radio("Go to", ["Home", "Add Expense", "Reports"], horizontal=True)
+    page = st.radio("Go to", ["Add Home Expense", "Reports"], horizontal=True)
 
     @st.cache_resource
     def get_gspread_client():
@@ -64,17 +65,14 @@ if authentication_status:
     def insert_data(client, spreadsheet_id, sheet_name, data):
         sheet = client.open_by_key(spreadsheet_id).worksheet(sheet_name)
         next_row = len(sheet.get_all_values()) + 1
-        sheet.update_cell(next_row, 3, data[0])
-        sheet.update_cell(next_row, 4, data[1])
-        sheet.update_cell(next_row, 5, data[2])
-        sheet.update_cell(next_row, 6, data[3])
+        sheet.update_cell(next_row, 8, data[0])
+        sheet.update_cell(next_row, 9, data[1])
+        sheet.update_cell(next_row, 10, data[2])
+        sheet.update_cell(next_row, 11, data[3])
         return next_row
 
     # --- Page Logic ---
-    if page == "Home":
-        st.write("🏠 Welcome to the Expense Tracker home page.")
-
-    elif page == "Add Expense":
+    if page == "Add Home Expense":
         with st.form("expense_form"):
             st.subheader("Enter Expense Details")
             date_input = st.date_input("📅 Date", value=date.today())
@@ -95,7 +93,7 @@ if authentication_status:
                 st.error("❌ Please fill in all fields.")
             else:
                 client = get_gspread_client()
-                spreadsheet_id = "1WZdCZkGldtU2SgACrThKUFhaemRWwqYwuCVKwF1402g"
+                spreadsheet_id = "1r2OjJNEFZKKHtQ7CMwman06YGFewptPheL2D1N4t1uk"
                 sheet_name = "May_2025"
                 row = insert_data(client, spreadsheet_id, sheet_name, [formatted_date, category, expense, items])
                 st.success(f"✅ Data inserted successfully into row {row}.")
