@@ -19,24 +19,34 @@ with cent_co:
       new_title = '<p style="font-family:fantasy; color:#DAA520; font-size: 42px;">The FET Quest</p>'
       st.markdown(new_title, unsafe_allow_html=True)
 
+footer = """
+<style>
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: white;
+        color: black;
+        text-align: center;
+        padding: 10px;
+        font-size: 16px;
+        z-index: 9999;
+        border-top: 1px solid #ccc;
+    }
 
-footer="""<style>
-#MainMenu {visibility: hidden; }
-.footer {
-position: fixed;
-left: 0;
-bottom: 0;
-width: 100%;
-background-color: white;
-color: black;
-text-align: center;
-}
+    /* Give some padding to Streamlit’s main block so content doesn’t get hidden */
+    .stApp {
+        padding-bottom: 60px;  /* Adjust based on footer height */
+    }
 </style>
 <div class="footer">
-<p>Developed with ❤️ By The FET Quest<a style='display: block; text-align: center</p>
+    Developed with ❤️ by <strong>The FET Quest</strong>
 </div>
 """
-#st.markdown(footer,unsafe_allow_html=True)
+
+st.markdown(footer, unsafe_allow_html=True)
+
 
 # --- Load Auth Config ---
 config = yaml.safe_load(st.secrets["auth"]["config"])
@@ -59,7 +69,6 @@ if authentication_status:
     st.success(f"👋 Welcome, {name}!")
     authenticator.logout('Logout', 'main')
 
-    # --- Page Navigation ---
     #page = st.radio("Go to", ["Home", "Add Expense", "Reports"], horizontal=True)
     page = st.radio("Go to", ["Add Home Expense", "Reports"], horizontal=True)
 
@@ -79,7 +88,6 @@ if authentication_status:
         sheet.update_cell(next_row, 11, data[3])
         return next_row
 
-    # --- Page Logic ---
     if page == "Add Home Expense":
         with st.form("expense_form"):
             st.subheader("Enter Expense Details")
