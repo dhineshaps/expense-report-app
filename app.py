@@ -79,13 +79,13 @@ if authentication_status:
         creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
         return gspread.authorize(creds)
 
-    def insert_data(client, spreadsheet_id, sheet_name, data):
+    def insert_data(client, spreadsheet_id, sheet_name, cols, data):
         sheet = client.open_by_key(spreadsheet_id).worksheet(sheet_name)
         next_row = len(sheet.get_all_values()) + 1
-        sheet.update_cell(next_row, 8, data[0])
-        sheet.update_cell(next_row, 9, data[1])
-        sheet.update_cell(next_row, 10, data[2])
-        sheet.update_cell(next_row, 11, data[3])
+        sheet.update_cell(next_row, cols[0], data[0])
+        sheet.update_cell(next_row, cols[1], data[1])
+        sheet.update_cell(next_row, cols[2], data[2])
+        sheet.update_cell(next_row, cols[3], data[3])
         return next_row
 
     if page == "Add Home Expense":
@@ -112,7 +112,8 @@ if authentication_status:
                 client = get_gspread_client()
                 spreadsheet_id = "1r2OjJNEFZKKHtQ7CMwman06YGFewptPheL2D1N4t1uk"
                 sheet_name = "May_2025"
-                row = insert_data(client, spreadsheet_id, sheet_name, [formatted_date, category, expense, items])
+                cols = [8,9,10,11]
+                row = insert_data(client, spreadsheet_id, sheet_name, cols, [formatted_date, category, expense, items])
                 st.success(f"✅ Data inserted successfully into row {row}.")
         if reset:
             st.session_state.reset_triggered = True
