@@ -5,6 +5,7 @@ import streamlit_authenticator as stauth
 from datetime import date
 import gspread
 from google.oauth2.service_account import Credentials
+from datetime import date
 
 # --- Reset logic ---
 if "reset_triggered" in st.session_state and st.session_state.reset_triggered:
@@ -62,6 +63,38 @@ authenticator = stauth.Authenticate(
 st.title("📒 Expense Tracker")
 name, authentication_status, username = authenticator.login('Login', 'main')
 
+date_input = date.today()
+date1 = date_input.strftime("%d-%m-%Y")
+Mon = int(date1.split("-")[1])
+yr = int(date1.split("-")[2])
+
+if (Mon == 1):
+    Month = "Jan"
+elif (Mon == 2):
+    Month = "Feb"
+elif (Mon == 3):
+    Month = "Mar"
+elif (Mon == 4):
+    Month = "Apr" 
+elif (Mon == 5):
+    Month = "May"
+elif (Mon == 6):
+    Month = "Jun"
+elif (Mon == 7):
+    Month = "July"   
+elif (Mon == 8):
+    Month = "Aug"
+elif (Mon == 9):
+    Month = "Sep"
+elif (Mon == 10):
+    Month = "Oct"
+elif (Mon == 11):
+    Month = "Nov"
+elif (Mon == 12):
+    Month = "Dec"
+
+Sheet = str(Month)+'_'+str(yr)+'_'+"Test"
+
 # --- Google Sheets Client ---
 @st.cache_resource
 def get_gspread_client():
@@ -110,8 +143,8 @@ if authentication_status:
                 ), key="category_input")
             elif page == "Add Personal Expense":
                 category = st.selectbox("📂 Category", (
-                "EMI", "Dad", "Vijaya" "Fruits","Snacks", "Entertainment","Juice","Donation",
-                "Tickets", "Lent","Loan Repayment," "Home Maint", "Tea and Snacks", "Food",
+                "EMI", "Dad", "Vijaya" ,"Tea and Snacks","Fruits","Snacks", "Entertainment","Juice",
+                "Donation","Tickets", "Lent","Loan Repayment," "Home Maint","Food",
                 "Non-Veg","Egg", "Personal wellness","Ecommerce","Others"
                  ), key="category_input")
             elif page == "Purchase from Reserve":
@@ -143,7 +176,7 @@ if authentication_status:
             else:
                 client = get_gspread_client()
                 spreadsheet_id = "1r2OjJNEFZKKHtQ7CMwman06YGFewptPheL2D1N4t1uk"
-                sheet_name = "May_2025"
+                sheet_name = Sheet
                 sheet = client.open_by_key(spreadsheet_id).worksheet(sheet_name)
 
                 if page == "Add Home Expense":
