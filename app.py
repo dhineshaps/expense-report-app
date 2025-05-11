@@ -95,7 +95,7 @@ elif (Mon == 11):
 elif (Mon == 12):
     Month = "Dec"
 
-Sheet = str(Month)+'_'+str(yr)+'_'+"Test"
+Sheet = str(Month)+'_'+str(yr)
 
 # --- Google Sheets Client ---
 @st.cache_resource
