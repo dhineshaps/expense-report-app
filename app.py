@@ -7,6 +7,8 @@ import gspread
 from google.oauth2.service_account import Credentials
 from datetime import date
 
+st.set_page_config(page_title="Expense Tracker", page_icon = im,layout="wide")
+
 # --- Reset logic ---
 if "reset_triggered" in st.session_state and st.session_state.reset_triggered:
     st.session_state.expense_input = ""
