@@ -188,7 +188,37 @@ if authentication_status:
             st.rerun()
 
     elif page == "Reports":
-        st.write("📊 Reports page is under construction.")
+        #st.write("📊 Reports page is under construction.")
+        st.subheader("📊 Monthly Report Viewer")
+
+        sheet = get_gspread_client(Sheet)
+
+        start_row = 8
+		col_h = sheet.col_values(8)[start_row - 1:]
+        col_i = sheet.col_values(9)[start_row - 1:]
+        col_j = sheet.col_values(10)[start_row - 1:]
+		col_k = sheet.col_values(11)[start_row - 1:]
+
+        data = list(zip(col_h,col_i, col_j,col_k))
+
+        if data:
+            df = pd.DataFrame(data, columns=["Date","Category", "Expense","Items"])
+            df['Expense'] = pd.to_numeric(df['Expense'])
+            st.dataframe(df, use_container_width=True)
+        else:
+            st.info("ℹ️ No data found in the selected range.")
+			
+        grouped = df.groupby('Category')
+        sum_by_category = grouped['Expense'].sum()
+        sum_df = sum_by_category.reset_index() 
+        st.write("Expense by category:\n", sum_by_category)
+
+        st.bar_chart(sum_df.set_index('Category'))
+
+        fig, ax = plt.subplots()
+        ax.pie(sum_df['Expense'], labels=sum_df['Category'], autopct='%1.1f%%', startangle=90)
+        ax.axis('equal')
+        st.pyplot(fig)
 
 elif authentication_status is False:
     st.error("❌ Username/password is incorrect")
