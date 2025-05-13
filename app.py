@@ -212,17 +212,18 @@ if authentication_status:
             sum_df = sum_by_category.reset_index()
 
             st.write("💰 **Expense by Category**")
-            st.dataframe(sum_df)
+            with st.expander("View 💰 **Expense by Category**"):
+                st.dataframe(sum_df)
 
             # Bar chart
             st.bar_chart(sum_df.set_index('Category'))
 
             # Pie chart
-            import matplotlib.pyplot as plt
-            fig, ax = plt.subplots()
-            ax.pie(sum_df['Expense'], labels=sum_df['Category'], autopct='%1.1f%%', startangle=90)
-            ax.axis('equal')
-            st.pyplot(fig)
+            # import matplotlib.pyplot as plt
+            # fig, ax = plt.subplots()
+            # ax.pie(sum_df['Expense'], labels=sum_df['Category'], autopct='%1.1f%%', startangle=90)
+            # ax.axis('equal')
+            # st.pyplot(fig)
 
         else:
             st.info("ℹ️ No data found in the selected range.")
