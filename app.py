@@ -6,6 +6,9 @@ from datetime import date
 import gspread
 from google.oauth2.service_account import Credentials
 from datetime import date
+import pandas as pd
+import matplotlib.pyplot as plt
+import altair as alt
 
 st.set_page_config(page_title="Expense Tracker",layout="wide")
 
@@ -70,40 +73,47 @@ date1 = date_input.strftime("%d-%m-%Y")
 Mon = int(date1.split("-")[1])
 yr = int(date1.split("-")[2])
 
-if (Mon == 1):
-    Month = "Jan"
-elif (Mon == 2):
-    Month = "Feb"
-elif (Mon == 3):
-    Month = "Mar"
-elif (Mon == 4):
-    Month = "Apr" 
-elif (Mon == 5):
-    Month = "May"
-elif (Mon == 6):
-    Month = "Jun"
-elif (Mon == 7):
-    Month = "July"   
-elif (Mon == 8):
-    Month = "Aug"
-elif (Mon == 9):
-    Month = "Sep"
-elif (Mon == 10):
-    Month = "Oct"
-elif (Mon == 11):
-    Month = "Nov"
-elif (Mon == 12):
-    Month = "Dec"
+month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+               "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
+Month = month_names[Mon - 1]
+Sheet = f"{Month}_{yr}_Test"
 
-Sheet = str(Month)+'_'+str(yr)
+# if (Mon == 1):
+#     Month = "Jan"
+# elif (Mon == 2):
+#     Month = "Feb"
+# elif (Mon == 3):
+#     Month = "Mar"
+# elif (Mon == 4):
+#     Month = "Apr" 
+# elif (Mon == 5):
+#     Month = "May"
+# elif (Mon == 6):
+#     Month = "Jun"
+# elif (Mon == 7):
+#     Month = "July"   
+# elif (Mon == 8):
+#     Month = "Aug"
+# elif (Mon == 9):
+#     Month = "Sep"
+# elif (Mon == 10):
+#     Month = "Oct"
+# elif (Mon == 11):
+#     Month = "Nov"
+# elif (Mon == 12):
+#     Month = "Dec"
+
+# Sheet = str(Month)+'_'+str(yr)
 
 # --- Google Sheets Client ---
 @st.cache_resource
-def get_gspread_client():
+def get_gspread_client(sheet_name):
     creds_dict = st.secrets["connections"]["expense"]
     scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
     creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
-    return gspread.authorize(creds)
+    client = gspread.authorize(creds)
+    spreadsheet_id = "1WZdCZkGldtU2SgACrThKUFhaemRWwqYwuCVKwF1402g"
+    return client.open_by_key(spreadsheet_id).worksheet(sheet_name)
 
 # --- Find next empty row based on column group ---
 def get_next_available_row(sheet, column_letters, start_row=2):
@@ -176,11 +186,7 @@ if authentication_status:
             elif not (formatted_date and category and expense and items):
                 st.error("❌ Please fill in all fields.")
             else:
-                client = get_gspread_client()
-                spreadsheet_id = "1r2OjJNEFZKKHtQ7CMwman06YGFewptPheL2D1N4t1uk"
-                sheet_name = Sheet
-                sheet = client.open_by_key(spreadsheet_id).worksheet(sheet_name)
-
+                sheet = get_gspread_client(Sheet
                 if page == "Add Home Expense":
                     target_cols = ["H", "I", "J", "K"]
                 elif page == "Add Personal Expense":
