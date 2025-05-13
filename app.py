@@ -217,7 +217,7 @@ if authentication_status:
                 st.dataframe(sum_df)
 
             # Bar chart
-            st.bar_chart(sum_df.set_index('Category'))
+            #st.bar_chart(sum_df.set_index('Category'))
 
             # Pie chart
             # import matplotlib.pyplot as plt
@@ -231,7 +231,7 @@ if authentication_status:
                 x="Category",
                 y="Expense",
                 text="Expense",
-                color="Category",  # Auto-colors by category
+                color="Category", 
                 title="Expenses by Category",
                 labels={"Expense": "₹ Amount", "Category": "Expense Type"}
             )
