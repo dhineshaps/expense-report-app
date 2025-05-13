@@ -203,7 +203,8 @@ if authentication_status:
         if data:
             df = pd.DataFrame(data, columns=["Date", "Category", "Expense", "Items"])
             df['Expense'] = pd.to_numeric(df['Expense'], errors='coerce').fillna(0)
-            st.dataframe(df, use_container_width=True)
+            with st.expander("View the Day to Day Expense here"):
+                st.dataframe(df, use_container_width=True)
 
             # Group and summarize
             grouped = df.groupby('Category')
