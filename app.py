@@ -77,34 +77,8 @@ month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 Month = month_names[Mon - 1]
 Sheet = f"{Month}_{yr}_Test"
 
-# if (Mon == 1):
-#     Month = "Jan"
-# elif (Mon == 2):
-#     Month = "Feb"
-# elif (Mon == 3):
-#     Month = "Mar"
-# elif (Mon == 4):
-#     Month = "Apr" 
-# elif (Mon == 5):
-#     Month = "May"
-# elif (Mon == 6):
-#     Month = "Jun"
-# elif (Mon == 7):
-#     Month = "July"   
-# elif (Mon == 8):
-#     Month = "Aug"
-# elif (Mon == 9):
-#     Month = "Sep"
-# elif (Mon == 10):
-#     Month = "Oct"
-# elif (Mon == 11):
-#     Month = "Nov"
-# elif (Mon == 12):
-#     Month = "Dec"
 
-# Sheet = str(Month)+'_'+str(yr)
 
-# --- Google Sheets Client ---
 @st.cache_resource
 def get_gspread_client(sheet_name):
     creds_dict = st.secrets["connections"]["expense"]
@@ -131,7 +105,7 @@ def insert_mapped_data(sheet, data_map):
         sheet.update_acell(f"{col}{r}", val)
     return r
 
-# --- Main Logic ---
+
 if authentication_status:
     st.success(f"👋 Welcome, {name}!")
     authenticator.logout('Logout', 'main')
