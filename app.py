@@ -212,7 +212,7 @@ if authentication_status:
             sum_df = sum_by_category.reset_index()
 
             st.write("💰 **Expense by Category**")
-            with st.expander("View 💰 **Expense by Category**"):
+            with st.expander("View 💰 **Expense by Category** here"):
                 st.dataframe(sum_df)
 
             # Bar chart
