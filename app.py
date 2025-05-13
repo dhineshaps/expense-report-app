@@ -8,7 +8,6 @@ from google.oauth2.service_account import Credentials
 from datetime import date
 import pandas as pd
 import matplotlib.pyplot as plt
-import altair as alt
 
 st.set_page_config(page_title="Expense Tracker",layout="wide")
 
