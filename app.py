@@ -8,6 +8,7 @@ from google.oauth2.service_account import Credentials
 from datetime import date
 import pandas as pd
 import matplotlib.pyplot as plt
+import plotly.express as px
 
 st.set_page_config(page_title="Expense Tracker",layout="wide")
 
@@ -224,6 +225,19 @@ if authentication_status:
             # ax.pie(sum_df['Expense'], labels=sum_df['Category'], autopct='%1.1f%%', startangle=90)
             # ax.axis('equal')
             # st.pyplot(fig)
+
+            fig = px.bar(
+                sum_df,
+                x="Category",
+                y="Expense",
+                text="Expense",
+                color="Category",  # Auto-colors by category
+                title="Expenses by Category",
+                labels={"Expense": "₹ Amount", "Category": "Expense Type"}
+            )
+            fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+            fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+            st.plotly_chart(fig, use_container_width=True)
 
         else:
             st.info("ℹ️ No data found in the selected range.")
