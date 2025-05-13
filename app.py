@@ -203,7 +203,7 @@ if authentication_status:
         if data:
             df = pd.DataFrame(data, columns=["Date", "Category", "Expense", "Items"])
             df['Expense'] = pd.to_numeric(df['Expense'], errors='coerce').fillna(0)
-            with st.expander("View the Day to Day Expense here"):
+            with st.expander("View the Day to Day Expense"):
                 st.dataframe(df, use_container_width=True)
 
             # Group and summarize
@@ -211,8 +211,8 @@ if authentication_status:
             sum_by_category = grouped['Expense'].sum()
             sum_df = sum_by_category.reset_index()
 
-            st.write("💰 **Expense by Category**")
-            with st.expander("View 💰 **Expense by Category** here"):
+            #st.write("💰 **Expense by Category**")
+            with st.expander("View 💰 **Expense by Category**"):
                 st.dataframe(sum_df)
 
             # Bar chart
