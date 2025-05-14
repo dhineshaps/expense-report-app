@@ -263,7 +263,7 @@ if authentication_status:
             )
             fig1.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
             fig1.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-            st1.plotly_chart(fig, use_container_width=True)
+            st1.plotly_chart(fig1, use_container_width=True)
 
         else:
             st.info("ℹ️ No data found in the selected range.")
