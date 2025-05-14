@@ -228,7 +228,7 @@ if authentication_status:
             fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
             fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
             st.plotly_chart(fig, use_container_width=True)
-            
+            st.write(username)  
     if(username == "Dhinesh"):
         start_row = 7
         col_b = sheet.col_values(2)[start_row - 1:]
