@@ -229,7 +229,7 @@ if authentication_status:
             fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
             st.plotly_chart(fig, use_container_width=True)
             
-        #if(username == "Dhinesh"):
+    if(username == "Dhinesh"):
         start_row = 7
         col_b = sheet.col_values(2)[start_row - 1:]
         col_c = sheet.col_values(3)[start_row - 1:]
