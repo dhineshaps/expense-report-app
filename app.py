@@ -230,6 +230,7 @@ if authentication_status:
             st.plotly_chart(fig, use_container_width=True)
             #st.write(username)  
     if(username == "dhinesh"):
+        sheet = get_gspread_client(Sheet)
         start_row = 7
         col_b = sheet.col_values(2)[start_row - 1:]
         col_c = sheet.col_values(3)[start_row - 1:]
