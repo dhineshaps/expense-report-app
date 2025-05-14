@@ -231,42 +231,42 @@ if authentication_status:
             #st.write(username)  
 			
           if(username == "dhinesh"):
-				sheet = get_gspread_client(Sheet)
-				start_row = 7
-				col_b = sheet.col_values(2)[start_row - 1:]
-				col_c = sheet.col_values(3)[start_row - 1:]
-				col_d = sheet.col_values(4)[start_row - 1:]
-				col_e = sheet.col_values(5)[start_row - 1:]
+		sheet = get_gspread_client(Sheet)
+		start_row = 7
+		col_b = sheet.col_values(2)[start_row - 1:]
+		col_c = sheet.col_values(3)[start_row - 1:]
+		col_d = sheet.col_values(4)[start_row - 1:]
+		col_e = sheet.col_values(5)[start_row - 1:]
 
-				data1 = list(zip(col_b, col_c, col_d, col_e))
+		data1 = list(zip(col_b, col_c, col_d, col_e))
 
-				if data1:
-					df1 = pd.DataFrame(data1, columns=["Date", "Category", "Expense", "Items"])
-					df1['Expense'] = pd.to_numeric(df1['Expense'], errors='coerce').fillna(0)
-					with st.expander("View the Personal Day to Day Expense"):
-						st.dataframe(df1, use_container_width=True)
+		if data1:
+			df1 = pd.DataFrame(data1, columns=["Date", "Category", "Expense", "Items"])
+			df1['Expense'] = pd.to_numeric(df1['Expense'], errors='coerce').fillna(0)
+			with st.expander("View the Personal Day to Day Expense"):
+				st.dataframe(df1, use_container_width=True)
 
-					# Group and summarize
-					grouped1 = df1.groupby('Category')
-					sum_by_category1 = grouped1['Expense'].sum()
-					sum_df1 = sum_by_category1.reset_index()
+			# Group and summarize
+			grouped1 = df1.groupby('Category')
+			sum_by_category1 = grouped1['Expense'].sum()
+			sum_df1 = sum_by_category1.reset_index()
 
-					#st.write("💰 **Expense by Category**")
-					with st.expander("View 💰 **Expense by Category for Personal**"):
-						st.dataframe(sum_df1)
+			#st.write("💰 **Expense by Category**")
+			with st.expander("View 💰 **Expense by Category for Personal**"):
+				st.dataframe(sum_df1)
 
-					fig1 = px.bar(
-						sum_df1,
-						x="Category",
-						y="Expense",
-						text="Expense",
-						color="Category", 
-						title="Expenses by Category",
-						labels={"Expense": "₹ Amount", "Category": "Expense Type"}
-					)
-					fig1.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
-					fig1.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-					st.plotly_chart(fig1, use_container_width=True)
+			fig1 = px.bar(
+				sum_df1,
+				x="Category",
+				y="Expense",
+				text="Expense",
+				color="Category", 
+				title="Expenses by Category",
+				labels={"Expense": "₹ Amount", "Category": "Expense Type"}
+			)
+			fig1.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+			fig1.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+			st.plotly_chart(fig1, use_container_width=True)
 
         else:
             st.info("ℹ️ No data found in the selected range.")
