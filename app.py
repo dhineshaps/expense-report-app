@@ -80,7 +80,7 @@ def get_gspread_client(sheet_name):
     scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
     creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
     client = gspread.authorize(creds)
-    spreadsheet_id = "1r2OjJNEFZKKHtQ7CMwman06YGFewptPheL2D1N4t1uk"
+    spreadsheet_id = "19bQyq5mE_606cUfjl3_GmK5kAB5uunbRbfUA8f6sKtM"
     return client.open_by_key(spreadsheet_id).worksheet(sheet_name)
 
 # --- Find next empty row based on column group ---
