@@ -5,12 +5,11 @@ import streamlit_authenticator as stauth
 from datetime import date
 import gspread
 from google.oauth2.service_account import Credentials
-from datetime import date
 import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
 
-st.set_page_config(page_title="Expense Tracker",layout="wide")
+st.set_page_config(page_title="Expense Tracker", layout="wide")
 
 # --- Reset logic ---
 if "reset_triggered" in st.session_state and st.session_state.reset_triggered:
@@ -43,18 +42,15 @@ footer = """
         border-top: 1px solid #ccc;
     }
 
-    /* Give some padding to Streamlit’s main block so content doesn’t get hidden */
     .stApp {
-        padding-bottom: 60px;  /* Adjust based on footer height */
+        padding-bottom: 60px;
     }
 </style>
 <div class="footer">
     Developed with ❤️ by <strong>The FET Quest</strong>
 </div>
 """
-
 st.markdown(footer, unsafe_allow_html=True)
-
 
 # --- Auth Config ---
 config = yaml.safe_load(st.secrets["auth"]["config"])
@@ -72,12 +68,10 @@ date_input = date.today()
 date1 = date_input.strftime("%d-%m-%Y")
 Mon = int(date1.split("-")[1])
 yr = int(date1.split("-")[2])
-
 month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
 Month = month_names[Mon - 1]
 Sheet = f"{Month}_{yr}"
-
 
 
 @st.cache_resource
@@ -106,15 +100,14 @@ def insert_mapped_data(sheet, data_map):
         sheet.update_acell(f"{col}{r}", val)
     return r
 
-
 if authentication_status:
     st.success(f"👋 Welcome, {name}!")
     authenticator.logout('Logout', 'main')
 
     page = st.radio("Go to", ["Add Home Expense", "Add Personal Expense", "Purchase from Reserve",
-    "Savings","Investment", "Reports"], horizontal=True)
+                               "Savings", "Investment", "Reports"], horizontal=True)
 
-    if page in ["Add Home Expense", "Add Personal Expense", "Purchase from Reserve","Savings","Investment"]:
+    if page in ["Add Home Expense", "Add Personal Expense", "Purchase from Reserve", "Savings", "Investment"]:
         if page == "Add Personal Expense":
             st.write("Dhinesh's Personal Expenses Only")
         with st.form("expense_form"):
@@ -123,33 +116,34 @@ if authentication_status:
             formatted_date = date_input.strftime("%d-%m-%Y")
             if page == "Add Home Expense":
                 category = st.selectbox("📂 Category", (
-                    "Grocery", "Vegetables", "Fruits", "Gas", "Cab","Snacks", "Entertainment",
+                    "Grocery", "Vegetables", "Fruits", "Gas", "Cab", "Snacks", "Entertainment",
                     "Tickets", "Rent", "Home Maint", "Tea and Snacks", "Food", "Non-Veg",
                     "Egg", "Personal wellness", "Others"
                 ), key="category_input")
             elif page == "Add Personal Expense":
                 category = st.selectbox("📂 Category", (
-                "EMI", "Dad", "Vijaya" ,"Tea and Snacks","Fruits","Cab","Snacks","Home Snacks","Home Spend",
-		"Entertainment","Juice", "Donation","Tickets", "Lent","Loan Repayment","Home Maint","Food",
-                "Non-Veg","Egg", "Personal wellness","Ecommerce","Others"
-                 ), key="category_input")
+                    "EMI", "Dad", "Vijaya", "Tea and Snacks", "Fruits", "Cab", "Snacks", "Home Snacks", "Home Spend",
+                    "Entertainment", "Juice", "Donation", "Tickets", "Lent", "Loan Repayment", "Home Maint", "Food",
+                    "Non-Veg", "Egg", "Personal wellness", "Ecommerce", "Others"
+                ), key="category_input")
             elif page == "Purchase from Reserve":
                 category = st.selectbox("📂 Category", (
-                "Donation", "Lent","Loan Repayment," "Home Maint","Personal wellness","Ecommerce","Others",
-                "Gift"
-                 ), key="category_input")
+                    "Donation", "Lent", "Loan Repayment", "Home Maint", "Personal wellness", "Ecommerce", "Others", "Gift"
+                ), key="category_input")
             elif page == "Savings":
                 category = st.selectbox("📂 Category", (
-                "Last Month Pass Over", "Gift","Others"
-                 ), key="category_input")
+                    "Last Month Pass Over", "Gift", "Others"
+                ), key="category_input")
             elif page == "Investment":
                 category = st.selectbox("📂 Category", (
-                "Gold", "Equity","Bonds","Mutual Funds"
-                 ), key="category_input")
+                    "Gold", "Equity", "Bonds", "Mutual Funds"
+                ), key="category_input")
+
             if page == "Savings":
                 expense = st.text_input("💸 Savings in Rs.", key="expense_input")
             else:
                 expense = st.text_input("💸 Expense in Rs.", key="expense_input")
+
             items = st.text_input("🛒 Items", key="items_input")
             submit = st.form_submit_button("Submit")
             reset = st.form_submit_button("Reset")
@@ -171,7 +165,6 @@ if authentication_status:
                     target_cols = ["R", "S", "T", "U"]
                 elif page == "Investment":
                     target_cols = ["W", "X", "Y", "Z"]
-                
 
                 row = get_next_available_row(sheet, target_cols)
                 data_map = {
@@ -180,7 +173,6 @@ if authentication_status:
                     target_cols[2]: (row, expense),
                     target_cols[3]: (row, items),
                 }
-
                 inserted_row = insert_mapped_data(sheet, data_map)
                 st.success(f"✅ Data inserted successfully into row {inserted_row}.")
 
@@ -190,15 +182,12 @@ if authentication_status:
 
     elif page == "Reports":
         st.subheader("📊 Monthly Report Viewer")
-
         sheet = get_gspread_client(Sheet)
-
         start_row = 8
         col_h = sheet.col_values(8)[start_row - 1:]
         col_i = sheet.col_values(9)[start_row - 1:]
         col_j = sheet.col_values(10)[start_row - 1:]
         col_k = sheet.col_values(11)[start_row - 1:]
-
         data = list(zip(col_h, col_i, col_j, col_k))
 
         if data:
@@ -207,12 +196,10 @@ if authentication_status:
             with st.expander("View the Day to Day Expense"):
                 st.dataframe(df, use_container_width=True)
 
-            # Group and summarize
             grouped = df.groupby('Category')
             sum_by_category = grouped['Expense'].sum()
             sum_df = sum_by_category.reset_index()
 
-            #st.write("💰 **Expense by Category**")
             with st.expander("View 💰 **Expense by Category**"):
                 st.dataframe(sum_df)
 
@@ -221,7 +208,7 @@ if authentication_status:
                 x="Category",
                 y="Expense",
                 text="Expense",
-                color="Category", 
+                color="Category",
                 title="Expenses by Category",
                 labels={"Expense": "₹ Amount", "Category": "Expense Type"}
             )
@@ -230,48 +217,44 @@ if authentication_status:
             st.plotly_chart(fig, use_container_width=True)
         else:
             st.info("ℹ️ No data found in the selected range for Home Expense.")
-            #st.write(username)
-        if(username == "dhinesh"):
-	    sheet = get_gspread_client(Sheet)
-	    start_row = 7
-	    col_b = sheet.col_values(2)[start_row - 1:]
-	    col_c = sheet.col_values(3)[start_row - 1:]
-	    col_d = sheet.col_values(4)[start_row - 1:]
-	    col_e = sheet.col_values(5)[start_row - 1:]
-	
-	    data1 = list(zip(col_b, col_c, col_d, col_e))
-	
-	    if data1:
-		df1 = pd.DataFrame(data1, columns=["Date", "Category", "Expense", "Items"])
-		df1['Expense'] = pd.to_numeric(df1['Expense'], errors='coerce').fillna(0)
-		with st.expander("View the Personal Day to Day Expense"):
-			st.dataframe(df1, use_container_width=True)
-	
-		# Group and summarize
-		grouped1 = df1.groupby('Category')
-		sum_by_category1 = grouped1['Expense'].sum()
-		sum_df1 = sum_by_category1.reset_index()
-	
-		#st.write("💰 **Expense by Category**")
-		with st.expander("View 💰 **Expense by Category for Personal**"):
-			st.dataframe(sum_df1)
-	
-		fig1 = px.bar(
-			sum_df1,
-			x="Category",
-			y="Expense",
-			text="Expense",
-			color="Category", 
-			title="Expenses by Category",
-			labels={"Expense": "₹ Amount", "Category": "Expense Type"}
-		)
-		fig1.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
-		fig1.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-		st.plotly_chart(fig1, use_container_width=True)
 
-        else:
-            st.info("ℹ️ No data found in the selected range.")
-      
+        if username == "dhinesh":
+            sheet = get_gspread_client(Sheet)
+            start_row = 7
+            col_b = sheet.col_values(2)[start_row - 1:]
+            col_c = sheet.col_values(3)[start_row - 1:]
+            col_d = sheet.col_values(4)[start_row - 1:]
+            col_e = sheet.col_values(5)[start_row - 1:]
+            data1 = list(zip(col_b, col_c, col_d, col_e))
+
+            if data1:
+                df1 = pd.DataFrame(data1, columns=["Date", "Category", "Expense", "Items"])
+                df1['Expense'] = pd.to_numeric(df1['Expense'], errors='coerce').fillna(0)
+                with st.expander("View the Personal Day to Day Expense"):
+                    st.dataframe(df1, use_container_width=True)
+
+                grouped1 = df1.groupby('Category')
+                sum_by_category1 = grouped1['Expense'].sum()
+                sum_df1 = sum_by_category1.reset_index()
+
+                with st.expander("View 💰 **Expense by Category for Personal**"):
+                    st.dataframe(sum_df1)
+
+                fig1 = px.bar(
+                    sum_df1,
+                    x="Category",
+                    y="Expense",
+                    text="Expense",
+                    color="Category",
+                    title="Expenses by Category",
+                    labels={"Expense": "₹ Amount", "Category": "Expense Type"}
+                )
+                fig1.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+                fig1.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+                st.plotly_chart(fig1, use_container_width=True)
+            else:
+                st.info("ℹ️ No data found in the selected range.")
+
 elif authentication_status is False:
     st.error("❌ Username/password is incorrect")
 
