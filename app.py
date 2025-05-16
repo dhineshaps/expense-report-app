@@ -193,7 +193,26 @@ if authentication_status:
             col_4 = sheet.col_values(col4)[start_row - 1:]
             data = list(zip(col_1, col_2, col_3, col_4))                
             return data
-                
+
+        def report_Datav1(sheetNo,col1,col2,col3,col4,colname1,colname2,colname3,colname4):   
+            sheet = get_gspread_client(Sheet)
+            start_row = sheetNo
+            col_1 = sheet.col_values(col1)[start_row - 1:]
+            col_2 = sheet.col_values(col2)[start_row - 1:]
+            col_3 = sheet.col_values(col3)[start_row - 1:]
+            col_4 = sheet.col_values(col4)[start_row - 1:]
+            data = list(zip(col_1, col_2, col_3, col_4)) 
+
+            if data:
+                df = pd.DataFrame(data, columns=["Date", "Category", "Expense", "Items"])
+                df['Expense'] = pd.to_numeric(df['Expense'], errors='coerce').fillna(0)
+                # with st.expander("View the Day to Day Expense"):
+                #     st.dataframe(df, use_container_width=True)
+                grouped = df.groupby('Category')
+                sum_by_category = grouped['Expense'].sum()
+                sum_df = sum_by_category.reset_index()
+            return df,sum_df
+            
         data = report_Data(8,8,9,10,11) 
         if data:
             df = pd.DataFrame(data, columns=["Date", "Category", "Expense", "Items"])
@@ -280,6 +299,14 @@ if authentication_status:
                 fig2.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
                 st.plotly_chart(fig2, use_container_width=True)
             else:
+                st.info("ℹ️ No data found in the selected range.")
+
+             inv_exp,inv_exp_cat = report_Data(7,23,24,25,26,"Date","Category","Investment","Instrument")
+            
+             if inv_exp and  inv_exp_cat:
+                 with st.expander("View 💰 **Investment Made**"):
+                        st.dataframe(inv_exp)
+             else:
                 st.info("ℹ️ No data found in the selected range.")
                 
 
