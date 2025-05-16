@@ -278,7 +278,7 @@ if authentication_status:
                 st.plotly_chart(fig1, use_container_width=True)
             else:
                 st.info("ℹ️ No data found in the selected range.")
-             st.write("Reserver Expense")   
+            st.write("Reserver Expense")   
             data2 = report_Data(7,13,14,15,16) 
             if data1:
                 df2 = pd.DataFrame(data2, columns=["Date", "Category", "Expense", "Items"])
