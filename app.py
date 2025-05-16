@@ -206,6 +206,7 @@ if authentication_status:
             if data:
                 df = pd.DataFrame(data, columns=[colname1, colname2, colname3,colname4])
                 df[colname3] = pd.to_numeric(df[colname3], errors='coerce').fillna(0)
+                df.index = df.index + 1
                 # with st.expander("View the Day to Day Expense"):
                 #     st.dataframe(df, use_container_width=True)
                 grouped = df.groupby(colname2)
