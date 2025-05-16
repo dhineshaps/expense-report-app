@@ -80,7 +80,7 @@ def get_gspread_client(sheet_name):
     scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
     creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
     client = gspread.authorize(creds)
-    #spreadsheet_id = "19bQyq5mE_606cUfjl3_GmK5kAB5uunbRbfUA8f6sKtM"
+    #spreadsheet_id = "1r2OjJNEFZKKHtQ7CMwman06YGFewptPheL2D1N4t1uk"
     spreadsheet_id = st.secrets["sheet_id"]
     return client.open_by_key(spreadsheet_id).worksheet(sheet_name)
 
@@ -117,13 +117,13 @@ if authentication_status:
             formatted_date = date_input.strftime("%d-%m-%Y")
             if page == "Add Home Expense":
                 category = st.selectbox("📂 Category", (
-                    "Grocery", "Vegetables", "Fruits", "Cooking Gas", "Cab", "Snacks", "Entertainment",
+                    "Grocery", "Vegetables", "Fruits", "Gas", "Cab", "Snacks", "Entertainment",
                     "Tickets", "Rent", "Home Maint", "Tea and Snacks", "Food", "Non-Veg",
                     "Egg", "Personal wellness", "Others"
                 ), key="category_input")
             elif page == "Add Personal Expense":
                 category = st.selectbox("📂 Category", (
-                    "EMI", "Family Expense", "Tea and Snacks", "Fruits", "Cab", "Snacks", "Home Snacks", "Home Spend",
+                    "EMI", "Dad", "Vijaya", "Tea and Snacks", "Fruits", "Cab", "Snacks", "Home Snacks", "Home Spend",
                     "Entertainment", "Juice", "Donation", "Tickets", "Lent", "Loan Repayment", "Home Maint", "Food",
                     "Non-Veg", "Egg", "Personal wellness", "Ecommerce", "Others"
                 ), key="category_input")
@@ -183,7 +183,6 @@ if authentication_status:
 
     elif page == "Reports":
         st.subheader("📊 Monthly Report Viewer")
-
         def report_Data(sheetNo,col1,col2,col3,col4):   
             sheet = get_gspread_client(Sheet)
             start_row = sheetNo
@@ -252,6 +251,7 @@ if authentication_status:
                 st.plotly_chart(fig1, use_container_width=True)
             else:
                 st.info("ℹ️ No data found in the selected range.")
+
 
 elif authentication_status is False:
     st.error("❌ Username/password is incorrect")
