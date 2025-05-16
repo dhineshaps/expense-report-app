@@ -227,6 +227,7 @@ if authentication_status:
             grouped = df.groupby('Category')
             sum_by_category = grouped['Expense'].sum()
             sum_df = sum_by_category.reset_index()
+            sum_df.index = range(1, len(sum_df) + 1)
 
             with st.expander("View 💰 **Expense by Category**"):
                 st.dataframe(sum_df)
@@ -258,6 +259,7 @@ if authentication_status:
                 grouped1 = df1.groupby('Category')
                 sum_by_category1 = grouped1['Expense'].sum()
                 sum_df1 = sum_by_category1.reset_index()
+                sum_df1.index = range(1, len(sum_df1) + 1)
 
                 with st.expander("View 💰 **Expense by Category for Personal**"):
                     st.dataframe(sum_df1)
@@ -288,6 +290,7 @@ if authentication_status:
                 grouped2 = df2.groupby('Category')
                 sum_by_category2 = grouped2['Expense'].sum()
                 sum_df2 = sum_by_category2.reset_index()
+                sum_df2.index = range(1, len(sum_df2) + 1)
 
                 with st.expander("View 💰 **Expense by Category for Reserve Expense**"):
                     st.dataframe(sum_df2)
