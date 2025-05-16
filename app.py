@@ -129,7 +129,8 @@ if authentication_status:
                 ), key="category_input")
             elif page == "Purchase from Reserve":
                 category = st.selectbox("📂 Category", (
-                    "Donation", "Lent", "Loan Repayment", "Home Maint", "Personal wellness", "Ecommerce", "Others", "Gift"
+                    "Donation", "Lent", "Loan Repayment", "Home Maint", "Personal wellness", "Ecommerce", "Others", "Gift",
+                    "Electronics","Furniture"
                 ), key="category_input")
             elif page == "Savings":
                 category = st.selectbox("📂 Category", (
