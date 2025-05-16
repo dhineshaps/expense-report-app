@@ -314,7 +314,7 @@ if authentication_status:
                 fig3 = px.bar(
                     inv_exp_cat,
                     x="Category",
-                    y="Investments",
+                    y="Investment",
                     text="Investments",
                     color="Category",
                     title="Investments by Category",
