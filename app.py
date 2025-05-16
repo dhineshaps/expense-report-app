@@ -182,14 +182,17 @@ if authentication_status:
 
     elif page == "Reports":
         st.subheader("📊 Monthly Report Viewer")
-        sheet = get_gspread_client(Sheet)
-        start_row = 8
-        col_h = sheet.col_values(8)[start_row - 1:]
-        col_i = sheet.col_values(9)[start_row - 1:]
-        col_j = sheet.col_values(10)[start_row - 1:]
-        col_k = sheet.col_values(11)[start_row - 1:]
-        data = list(zip(col_h, col_i, col_j, col_k))
-
+        def report_Data(sheetNo,col1,col2,col3,col4):   
+            sheet = get_gspread_client(Sheet)
+            start_row = sheetNo
+            col_1 = sheet.col_values(col1)[start_row - 1:]
+            col_2 = sheet.col_values(col2)[start_row - 1:]
+            col_3 = sheet.col_values(col3)[start_row - 1:]
+            col_4 = sheet.col_values(col4)[start_row - 1:]
+            data = list(zip(col_1, col_2, col_3, col_4))                
+            return data
+                
+        data = report_Data(8,8,9,10,11) 
         if data:
             df = pd.DataFrame(data, columns=["Date", "Category", "Expense", "Items"])
             df['Expense'] = pd.to_numeric(df['Expense'], errors='coerce').fillna(0)
@@ -219,14 +222,7 @@ if authentication_status:
             st.info("ℹ️ No data found in the selected range for Home Expense.")
 
         if username == "dhinesh":
-            sheet = get_gspread_client(Sheet)
-            start_row = 7
-            col_b = sheet.col_values(2)[start_row - 1:]
-            col_c = sheet.col_values(3)[start_row - 1:]
-            col_d = sheet.col_values(4)[start_row - 1:]
-            col_e = sheet.col_values(5)[start_row - 1:]
-            data1 = list(zip(col_b, col_c, col_d, col_e))
-
+            data1 = report_Data(7,2,3,4,5) 
             if data1:
                 df1 = pd.DataFrame(data1, columns=["Date", "Category", "Expense", "Items"])
                 df1['Expense'] = pd.to_numeric(df1['Expense'], errors='coerce').fillna(0)
@@ -254,6 +250,7 @@ if authentication_status:
                 st.plotly_chart(fig1, use_container_width=True)
             else:
                 st.info("ℹ️ No data found in the selected range.")
+
 
 elif authentication_status is False:
     st.error("❌ Username/password is incorrect")
