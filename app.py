@@ -212,7 +212,7 @@ if authentication_status:
                 grouped = df.groupby(colname2)
                 sum_by_category = grouped[colname3].sum()
                 sum_df = sum_by_category.reset_index()
-                sum_df2.index = range(1, len(sum_df2) + 1)
+                sum_df.index = range(1, len(sum_df2) + 1)
                 #sum_df = sum_df.index + 1
                 return df,sum_df
             
