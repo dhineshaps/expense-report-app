@@ -252,6 +252,36 @@ if authentication_status:
                 st.plotly_chart(fig1, use_container_width=True)
             else:
                 st.info("ℹ️ No data found in the selected range.")
+                
+            data2 = report_Data(7,13,14,15,16) 
+            if data1:
+                df2 = pd.DataFrame(data2, columns=["Date", "Category", "Expense", "Items"])
+                df2['Expense'] = pd.to_numeric(df2['Expense'], errors='coerce').fillna(0)
+                with st.expander("View the Personal Day to Day Expense"):
+                    st.dataframe(df2, use_container_width=True)
+
+                grouped2 = df2.groupby('Category')
+                sum_by_category2 = grouped2['Expense'].sum()
+                sum_df2 = sum_by_category2.reset_index()
+
+                with st.expander("View 💰 **Expense by Category for Reserve Expense**"):
+                    st.dataframe(sum_df2)
+
+                fig2 = px.bar(
+                    sum_df2,
+                    x="Category",
+                    y="Expense",
+                    text="Expense",
+                    color="Category",
+                    title="Expenses by Category",
+                    labels={"Expense": "₹ Amount", "Category": "Expense Type"}
+                )
+                fig2.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+                fig2.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+                st.plotly_chart(fig2, use_container_width=True)
+            else:
+                st.info("ℹ️ No data found in the selected range.")
+                
 
 
 elif authentication_status is False:
