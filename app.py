@@ -190,9 +190,8 @@ if authentication_status:
             col_2 = sheet.col_values(col2)[start_row - 1:]
             col_3 = sheet.col_values(col3)[start_row - 1:]
             col_4 = sheet.col_values(col4)[start_row - 1:]
-            data = list(zip(col_1, col_2, col_3, col_4))
-                
-         return data
+            data = list(zip(col_1, col_2, col_3, col_4))                
+            return data
                 
         
         sheet = get_gspread_client(Sheet)
