@@ -194,13 +194,6 @@ if authentication_status:
             return data
                 
         data = report_Data(8,8,9,10,11) 
-        # sheet = get_gspread_client(Sheet)
-        # start_row = 8
-        # col_h = sheet.col_values(8)[start_row - 1:]
-        # col_i = sheet.col_values(9)[start_row - 1:]
-        # col_j = sheet.col_values(10)[start_row - 1:]
-        # col_k = sheet.col_values(11)[start_row - 1:]
-        # data = list(zip(col_h, col_i, col_j, col_k))
         if data:
             df = pd.DataFrame(data, columns=["Date", "Category", "Expense", "Items"])
             df['Expense'] = pd.to_numeric(df['Expense'], errors='coerce').fillna(0)
