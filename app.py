@@ -257,7 +257,7 @@ if authentication_status:
             if data1:
                 df2 = pd.DataFrame(data2, columns=["Date", "Category", "Expense", "Items"])
                 df2['Expense'] = pd.to_numeric(df2['Expense'], errors='coerce').fillna(0)
-                with st.expander("View the Personal Day to Day Expense"):
+                with st.expander("View the Reserve Expense"):
                     st.dataframe(df2, use_container_width=True)
 
                 grouped2 = df2.groupby('Category')
