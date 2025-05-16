@@ -129,7 +129,8 @@ if authentication_status:
                 ), key="category_input")
             elif page == "Purchase from Reserve":
                 category = st.selectbox("📂 Category", (
-                    "Donation", "Lent", "Loan Repayment", "Home Maint", "Personal wellness", "Ecommerce", "Others", "Gift"
+                    "Donation", "Lent", "Loan Repayment", "Home Maint", "Personal wellness", "Ecommerce", "Others", "Gift",
+                    "Electronics","Furniture"
                 ), key="category_input")
             elif page == "Savings":
                 category = st.selectbox("📂 Category", (
@@ -192,17 +193,41 @@ if authentication_status:
             col_4 = sheet.col_values(col4)[start_row - 1:]
             data = list(zip(col_1, col_2, col_3, col_4))                
             return data
-                
+
+        def report_Datav1(sheetNo,col1,col2,col3,col4,colname1,colname2,colname3,colname4):   
+            sheet = get_gspread_client(Sheet)
+            start_row = sheetNo
+            col_1 = sheet.col_values(col1)[start_row - 1:]
+            col_2 = sheet.col_values(col2)[start_row - 1:]
+            col_3 = sheet.col_values(col3)[start_row - 1:]
+            col_4 = sheet.col_values(col4)[start_row - 1:]
+            data = list(zip(col_1, col_2, col_3, col_4)) 
+
+            if data:
+                df = pd.DataFrame(data, columns=[colname1, colname2, colname3,colname4])
+                df[colname3] = pd.to_numeric(df[colname3], errors='coerce').fillna(0)
+                df.index = df.index + 1
+                # with st.expander("View the Day to Day Expense"):
+                #     st.dataframe(df, use_container_width=True)
+                grouped = df.groupby(colname2)
+                sum_by_category = grouped[colname3].sum()
+                sum_df = sum_by_category.reset_index()
+                sum_df.index = range(1, len(sum_df) + 1)
+                #sum_df = sum_df.index + 1
+                return df,sum_df
+            
         data = report_Data(8,8,9,10,11) 
         if data:
             df = pd.DataFrame(data, columns=["Date", "Category", "Expense", "Items"])
             df['Expense'] = pd.to_numeric(df['Expense'], errors='coerce').fillna(0)
+            df.index = df.index + 1
             with st.expander("View the Day to Day Expense"):
                 st.dataframe(df, use_container_width=True)
 
             grouped = df.groupby('Category')
             sum_by_category = grouped['Expense'].sum()
             sum_df = sum_by_category.reset_index()
+            sum_df.index = range(1, len(sum_df) + 1)
 
             with st.expander("View 💰 **Expense by Category**"):
                 st.dataframe(sum_df)
@@ -227,12 +252,14 @@ if authentication_status:
             if data1:
                 df1 = pd.DataFrame(data1, columns=["Date", "Category", "Expense", "Items"])
                 df1['Expense'] = pd.to_numeric(df1['Expense'], errors='coerce').fillna(0)
+                df1.index = df1.index + 1
                 with st.expander("View the Personal Day to Day Expense"):
                     st.dataframe(df1, use_container_width=True)
 
                 grouped1 = df1.groupby('Category')
                 sum_by_category1 = grouped1['Expense'].sum()
                 sum_df1 = sum_by_category1.reset_index()
+                sum_df1.index = range(1, len(sum_df1) + 1)
 
                 with st.expander("View 💰 **Expense by Category for Personal**"):
                     st.dataframe(sum_df1)
@@ -251,6 +278,64 @@ if authentication_status:
                 st.plotly_chart(fig1, use_container_width=True)
             else:
                 st.info("ℹ️ No data found in the selected range.")
+                
+            data2 = report_Data(7,13,14,15,16) 
+            if data1:
+                df2 = pd.DataFrame(data2, columns=["Date", "Category", "Expense", "Items"])
+                df2['Expense'] = pd.to_numeric(df2['Expense'], errors='coerce').fillna(0)
+                df2.index = df2.index + 1
+                with st.expander("View the Reserve Expense"):
+                    st.dataframe(df2, use_container_width=True)
+
+                grouped2 = df2.groupby('Category')
+                sum_by_category2 = grouped2['Expense'].sum()
+                sum_df2 = sum_by_category2.reset_index()
+                sum_df2.index = range(1, len(sum_df2) + 1)
+
+                with st.expander("View 💰 **Expense by Category for Reserve Expense**"):
+                    st.dataframe(sum_df2)
+
+                fig2 = px.bar(
+                    sum_df2,
+                    x="Category",
+                    y="Expense",
+                    text="Expense",
+                    color="Category",
+                    title="Expenses by Category",
+                    labels={"Expense": "₹ Amount", "Category": "Expense Type"}
+                )
+                fig2.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+                fig2.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+                st.plotly_chart(fig2, use_container_width=True)
+            else:
+                st.info("ℹ️ No data found in the selected range.")
+            
+
+            inv_exp,inv_exp_cat = report_Datav1(7,23,24,25,26,"Date","Category","Investment","Instrument")
+            
+            if not inv_exp.empty and not inv_exp_cat.empty:
+                with st.expander("View 💰 **Investment Made**"):
+                    st.dataframe(inv_exp)
+
+                with st.expander("View 💰 **Total Investments by by Category**"):
+                    st.dataframe(inv_exp_cat)
+
+                fig3 = px.bar(
+                    inv_exp_cat,
+                    x="Category",
+                    y="Investment",
+                    text="Investment",
+                    color="Category",
+                    title="Investments by Category",
+                    labels={"Expense": "₹ Amount", "Category": "Expense Type"}
+                )
+                fig3.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+                fig3.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+                st.plotly_chart(fig3, use_container_width=True)
+            else:
+                st.warning("No investment data available.")
+
+                
 
 
 elif authentication_status is False:
