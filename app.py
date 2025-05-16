@@ -212,12 +212,14 @@ if authentication_status:
                 grouped = df.groupby(colname2)
                 sum_by_category = grouped[colname3].sum()
                 sum_df = sum_by_category.reset_index()
+                sum_df = sum_df.index + 1
                 return df,sum_df
             
         data = report_Data(8,8,9,10,11) 
         if data:
             df = pd.DataFrame(data, columns=["Date", "Category", "Expense", "Items"])
             df['Expense'] = pd.to_numeric(df['Expense'], errors='coerce').fillna(0)
+            df.index = df.index + 1
             with st.expander("View the Day to Day Expense"):
                 st.dataframe(df, use_container_width=True)
 
@@ -248,6 +250,7 @@ if authentication_status:
             if data1:
                 df1 = pd.DataFrame(data1, columns=["Date", "Category", "Expense", "Items"])
                 df1['Expense'] = pd.to_numeric(df1['Expense'], errors='coerce').fillna(0)
+                df1.index = df1.index + 1
                 with st.expander("View the Personal Day to Day Expense"):
                     st.dataframe(df1, use_container_width=True)
 
@@ -277,6 +280,7 @@ if authentication_status:
             if data1:
                 df2 = pd.DataFrame(data2, columns=["Date", "Category", "Expense", "Items"])
                 df2['Expense'] = pd.to_numeric(df2['Expense'], errors='coerce').fillna(0)
+                df2.index = df2.index + 1
                 with st.expander("View the Reserve Expense"):
                     st.dataframe(df2, use_container_width=True)
 
