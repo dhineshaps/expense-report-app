@@ -204,12 +204,12 @@ if authentication_status:
             data = list(zip(col_1, col_2, col_3, col_4)) 
 
             if data:
-                df = pd.DataFrame(data, columns=["Date", "Category", "Expense", "Items"])
-                df['Expense'] = pd.to_numeric(df['Expense'], errors='coerce').fillna(0)
+                df = pd.DataFrame(data, columns=[colname1, colname2, colname3,colname4])
+                df[colname3] = pd.to_numeric(df[colname3], errors='coerce').fillna(0)
                 # with st.expander("View the Day to Day Expense"):
                 #     st.dataframe(df, use_container_width=True)
-                grouped = df.groupby('Category')
-                sum_by_category = grouped['Expense'].sum()
+                grouped = df.groupby(colname2)
+                sum_by_category = grouped[colname3].sum()
                 sum_df = sum_by_category.reset_index()
             return df,sum_df
             
@@ -301,12 +301,12 @@ if authentication_status:
             else:
                 st.info("ℹ️ No data found in the selected range.")
 
-             inv_exp,inv_exp_cat = report_Data(7,23,24,25,26,"Date","Category","Investment","Instrument")
+            inv_exp,inv_exp_cat = report_Datav1(7,23,24,25,26,"Date","Category","Investment","Instrument")
             
-             if inv_exp and  inv_exp_cat:
+            if inv_exp and  inv_exp_cat:
                  with st.expander("View 💰 **Investment Made**"):
                         st.dataframe(inv_exp)
-             else:
+            else:
                 st.info("ℹ️ No data found in the selected range.")
                 
 
