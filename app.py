@@ -315,7 +315,7 @@ if authentication_status:
                     inv_exp_cat,
                     x="Category",
                     y="Investment",
-                    text="Investments",
+                    text="Investment",
                     color="Category",
                     title="Investments by Category",
                     labels={"Expense": "₹ Amount", "Category": "Expense Type"}
