@@ -307,6 +307,22 @@ if authentication_status:
             if not inv_exp.empty and not inv_exp_cat.empty:
                 with st.expander("View 💰 **Investment Made**"):
                     st.dataframe(inv_exp)
+
+                with st.expander("View 💰 **Total Investments by by Category**"):
+                    st.dataframe(inv_exp_cat)
+
+                fig3 = px.bar(
+                    inv_exp_cat,
+                    x="Category",
+                    y="Investments",
+                    text="Investments",
+                    color="Category",
+                    title="Investments by Category",
+                    labels={"Expense": "₹ Amount", "Category": "Expense Type"}
+                )
+                fig3.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+                fig3.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+                st.plotly_chart(fig3, use_container_width=True)
             else:
                 st.warning("No investment data available.")
 
