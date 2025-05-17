@@ -280,25 +280,23 @@ if authentication_status:
                 st.plotly_chart(fig1, use_container_width=True)
             else:
                 st.info("ℹ️ No data found in the selected range.")
-            st.write("Reserver Expense")   
-            data2 = report_Data(7,13,14,15,16) 
-            if data1:
-                df2 = pd.DataFrame(data2, columns=["Date", "Category", "Expense", "Items"])
-                df2['Expense'] = pd.to_numeric(df2['Expense'], errors='coerce').fillna(0)
-                df2.index = df2.index + 1
-                with st.expander("View the Reserve Expense"):
-                    st.dataframe(df2, use_container_width=True)
-
-                grouped2 = df2.groupby('Category')
-                sum_by_category2 = grouped2['Expense'].sum()
-                sum_df2 = sum_by_category2.reset_index()
-                sum_df2.index = range(1, len(sum_df2) + 1)
-
-                with st.expander("View 💰 **Expense by Category for Reserve Expense**"):
-                    st.dataframe(sum_df2)
+                
+            st.write("Reserver Expense")
+            
+            reserve_report = report_Datav1(7,13,14,15,16,"Date", "Category", "Expense", "Items") 
+			
+            if reserver_report:
+			  reserve_exp,reserve_exp_cat = reserve_report
+			   if not reserve_exp.empty:
+					with st.expander("View the Reserve Expense"):
+						st.dataframe(reserve_exp, use_container_width=True)
+						
+               if not reserve_exp_cat.empty:
+					with st.expander("View 💰 **Expense by Category for Reserve Expense**"):
+						st.dataframe(reserve_exp_cat, use_container_width=True)
 
                 fig2 = px.bar(
-                    sum_df2,
+                    reserve_exp_cat,
                     x="Category",
                     y="Expense",
                     text="Expense",
@@ -309,10 +307,11 @@ if authentication_status:
                 fig2.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
                 fig2.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
                 st.plotly_chart(fig2, use_container_width=True)
+              else:
+                st.info("No Reserve Expense data available.")
             else:
-                st.info("ℹ️ No data found in the selected range.")
-            
-
+                st.info("ℹ️ No data found in the selected range."
+  
             result = report_Datav1(7,23,24,25,26,"Date","Category","Investment","Instrument")
             if result: 
                 inv_exp,inv_exp_cat = result
