@@ -99,8 +99,10 @@ if authentication_status:
     st.success(f"👋 Welcome, {name}!")
     authenticator.logout('Logout', 'main')
 
-    page = st.radio("Go to", ["Add Home Expense", "Add Personal Expense", "Purchase from Reserve",
-                               "Savings", "Investment", "Reports"], horizontal=True)
+    # page = st.radio("Go to", ["Add Home Expense", "Add Personal Expense", "Purchase from Reserve",
+    #                            "Savings", "Investment", "Reports"], horizontal=True)
+    page = st.selectbox("Go to", ["Add Home Expense", "Add Personal Expense", "Purchase from Reserve",
+                              "Savings", "Investment", "Reports"])
 
     if page in ["Add Home Expense", "Add Personal Expense", "Purchase from Reserve", "Savings", "Investment"]:
         if page == "Add Personal Expense":
