@@ -174,15 +174,7 @@ if authentication_status:
     elif page == "Reports":
         st.subheader("📊 Monthly Report Viewer")
 
-        def report_Data(sheetNo, col1, col2, col3, col4):   
-            sheet = get_gspread_client(Sheet)
-            col_1 = sheet.col_values(col1)[sheetNo - 1:]
-            col_2 = sheet.col_values(col2)[sheetNo - 1:]
-            col_3 = sheet.col_values(col3)[sheetNo - 1:]
-            col_4 = sheet.col_values(col4)[sheetNo - 1:]
-            return list(zip(col_1, col_2, col_3, col_4))
-
-        def report_Datav1(sheetNo, col1, col2, col3, col4, colname1, colname2, colname3, colname4):   
+        def report_Data(sheetNo, col1, col2, col3, col4, colname1, colname2, colname3, colname4):   
             sheet = get_gspread_client(Sheet)
             col_1 = sheet.col_values(col1)[sheetNo - 1:]
             col_2 = sheet.col_values(col2)[sheetNo - 1:]
@@ -201,7 +193,7 @@ if authentication_status:
             else:
                 return pd.DataFrame(), pd.DataFrame()
 
-        home_report = report_Datav1(8, 8, 9, 10, 11, "Date", "Category", "Expense", "Items")
+        home_report = report_Data(8, 8, 9, 10, 11, "Date", "Category", "Expense", "Items")
         if home_report:
             home_exp, home_exp_cat = home_report
         
@@ -224,7 +216,7 @@ if authentication_status:
             st.info("ℹ️ No data found in the selected range for Home Expense.")
 
         if username == "dhinesh":
-            personal_report = report_Datav1(7, 2, 3, 4, 5, "Date", "Category", "Expense", "Items") 
+            personal_report = report_Data(7, 2, 3, 4, 5, "Date", "Category", "Expense", "Items") 
             if personal_report:
                 
                 personal_exp, personal_exp_cat = personal_report
@@ -249,7 +241,7 @@ if authentication_status:
                 
             st.write("Reserve Expense")
             
-            reserve_report = report_Datav1(7, 13, 14, 15, 16, "Date", "Category", "Expense", "Items") 
+            reserve_report = report_Data(7, 13, 14, 15, 16, "Date", "Category", "Expense", "Items") 
             if reserve_report:
                 reserve_exp, reserve_exp_cat = reserve_report
                 if not reserve_exp.empty:
@@ -270,7 +262,7 @@ if authentication_status:
             else:
                 st.info("ℹ️ No data found in the selected range.")
 
-            result = report_Datav1(7, 23, 24, 25, 26, "Date", "Category", "Investment", "Instrument")
+            result = report_Data(7, 23, 24, 25, 26, "Date", "Category", "Investment", "Instrument")
             if result:
                 inv_exp, inv_exp_cat = result
                 if not inv_exp.empty:
