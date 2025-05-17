@@ -100,7 +100,7 @@ if authentication_status:
     authenticator.logout('Logout', 'main')
 
     page = st.radio("Go to", ["Add Home Expense", "Add Personal Expense", "Purchase from Reserve",
-                               "Savings", "Investment", "Reports"], horizontal=False)
+                               "Savings", "Investment", "Reports"], horizontal=)
 
     if page in ["Add Home Expense", "Add Personal Expense", "Purchase from Reserve", "Savings", "Investment"]:
         if page == "Add Personal Expense":
