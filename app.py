@@ -63,6 +63,30 @@ authenticator = stauth.Authenticate(
 st.title("📒 Expense Tracker")
 name, authentication_status, username = authenticator.login('Login', 'main')
 
+def display_expense_report(report_func, *args, date_col, cat_col, amt_col, item_col, 
+                           day_title, cat_title, no_data_msg):
+    report = report_func(*args, date_col, cat_col, amt_col, item_col, "Date", "Category", "Expense", "Items")
+    if report:
+        daily_exp, cat_exp = report
+
+        if not daily_exp.empty:
+            with st.expander(f"View the {day_title}"):
+                st.dataframe(daily_exp, use_container_width=True)
+
+        if not cat_exp.empty:
+            with st.expander(f"View 💰 **{cat_title}**"):
+                st.dataframe(cat_exp, use_container_width=True)
+
+            fig = px.bar(cat_exp, x="Category", y="Expense", text="Expense", color="Category",
+                         title="Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
+            fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+            fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.info(f"No {day_title} data available.")
+    else:
+        st.info(f"ℹ️ {no_data_msg}")
+
 date_input = date.today()
 date1 = date_input.strftime("%d-%m-%Y")
 Mon = int(date1.split("-")[1])
@@ -71,7 +95,6 @@ month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
 Month = month_names[Mon - 1]
 Sheet = f"{Month}_{yr}"
-
 
 @st.cache_resource
 def get_gspread_client(sheet_name):
@@ -174,14 +197,6 @@ if authentication_status:
     elif page == "Reports":
         st.subheader("📊 Monthly Report Viewer")
 
-        def report_Data(sheetNo, col1, col2, col3, col4):   
-            sheet = get_gspread_client(Sheet)
-            col_1 = sheet.col_values(col1)[sheetNo - 1:]
-            col_2 = sheet.col_values(col2)[sheetNo - 1:]
-            col_3 = sheet.col_values(col3)[sheetNo - 1:]
-            col_4 = sheet.col_values(col4)[sheetNo - 1:]
-            return list(zip(col_1, col_2, col_3, col_4))
-
         def report_Datav1(sheetNo, col1, col2, col3, col4, colname1, colname2, colname3, colname4):   
             sheet = get_gspread_client(Sheet)
             col_1 = sheet.col_values(col1)[sheetNo - 1:]
@@ -201,93 +216,55 @@ if authentication_status:
             else:
                 return pd.DataFrame(), pd.DataFrame()
 
-        data = report_Data(8, 8, 9, 10, 11) 
-        if data:
-            df = pd.DataFrame(data, columns=["Date", "Category", "Expense", "Items"])
-            df['Expense'] = pd.to_numeric(df['Expense'], errors='coerce').fillna(0)
-            df.index += 1
-            with st.expander("View the Day to Day Expense"):
-                st.dataframe(df, use_container_width=True)
-
-            sum_df = df.groupby('Category')['Expense'].sum().reset_index()
-            sum_df.index += 1
-
-            with st.expander("View 💰 **Expense by Category**"):
-                st.dataframe(sum_df)
-
-            fig = px.bar(sum_df, x="Category", y="Expense", text="Expense", color="Category",
-                         title="Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
-            fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
-            fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-            st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.info("ℹ️ No data found in the selected range for Home Expense.")
+        # --- Reports Section ---
+        display_expense_report(
+            report_Datav1,
+            8, 8, 9, 10, 11,
+            date_col="Date",
+            cat_col="Category",
+            amt_col="Expense",
+            item_col="Items",
+            day_title="Day to Day Expense",
+            cat_title="Expense by Category",
+            no_data_msg="No data found in the selected range for Home Expense."
+        )
 
         if username == "dhinesh":
-            # Personal Expense
-            data1 = report_Data(7, 2, 3, 4, 5) 
-            if data1:
-                df1 = pd.DataFrame(data1, columns=["Date", "Category", "Expense", "Items"])
-                df1['Expense'] = pd.to_numeric(df1['Expense'], errors='coerce').fillna(0)
-                df1.index += 1
-                with st.expander("View the Personal Day to Day Expense"):
-                    st.dataframe(df1, use_container_width=True)
+            display_expense_report(
+                report_Datav1,
+                7, 2, 3, 4, 5,
+                date_col="Date",
+                cat_col="Category",
+                amt_col="Expense",
+                item_col="Items",
+                day_title="Personal Day to Day Expense",
+                cat_title="Expense by Category for Personal",
+                no_data_msg="No data found in the selected range for Personal Expense."
+            )
 
-                sum_df1 = df1.groupby('Category')['Expense'].sum().reset_index()
-                sum_df1.index += 1
+            display_expense_report(
+                report_Datav1,
+                7, 13, 14, 15, 16,
+                date_col="Date",
+                cat_col="Category",
+                amt_col="Expense",
+                item_col="Items",
+                day_title="Reserve Expense",
+                cat_title="Expense by Category for Reserve Expense",
+                no_data_msg="No data found in the selected range for Reserve Expense."
+            )
 
-                with st.expander("View 💰 **Expense by Category for Personal**"):
-                    st.dataframe(sum_df1)
-
-                fig1 = px.bar(sum_df1, x="Category", y="Expense", text="Expense", color="Category",
-                              title="Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
-                fig1.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
-                fig1.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-                st.plotly_chart(fig1, use_container_width=True)
-            else:
-                st.info("ℹ️ No data found in the selected range.")
-
-            st.write("Reserver Expense")
-            reserve_report = report_Datav1(7, 13, 14, 15, 16, "Date", "Category", "Expense", "Items") 
-            if reserve_report:
-                reserve_exp, reserve_exp_cat = reserve_report
-                if not reserve_exp.empty:
-                    with st.expander("View the Reserve Expense"):
-                        st.dataframe(reserve_exp, use_container_width=True)
-
-                if not reserve_exp_cat.empty:
-                    with st.expander("View 💰 **Expense by Category for Reserve Expense**"):
-                        st.dataframe(reserve_exp_cat, use_container_width=True)
-
-                    fig2 = px.bar(reserve_exp_cat, x="Category", y="Expense", text="Expense", color="Category",
-                                  title="Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
-                    fig2.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
-                    fig2.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-                    st.plotly_chart(fig2, use_container_width=True)
-                else:
-                    st.info("No Reserve Expense data available.")
-            else:
-                st.info("ℹ️ No data found in the selected range.")
-
-            result = report_Datav1(7, 23, 24, 25, 26, "Date", "Category", "Investment", "Instrument")
-            if result:
-                inv_exp, inv_exp_cat = result
-                if not inv_exp.empty:
-                    with st.expander("View 💰 **Investment Made**"):
-                        st.dataframe(inv_exp)
-                if not inv_exp_cat.empty:
-                    with st.expander("View 💰 **Total Investments by Category**"):
-                        st.dataframe(inv_exp_cat)
-
-                    fig3 = px.bar(inv_exp_cat, x="Category", y="Investment", text="Investment", color="Category",
-                                  title="Investments by Category", labels={"Investment": "₹ Amount", "Category": "Investment Type"})
-                    fig3.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
-                    fig3.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-                    st.plotly_chart(fig3, use_container_width=True)
-                else:
-                    st.warning("No investment data available.")
-            else:
-                st.error("Failed to retrieve data.")
+            display_expense_report(
+                report_Datav1,
+                7, 23, 24, 25, 26,
+                date_col="Date",
+                cat_col="Category",
+                amt_col="Investment",
+                item_col="Instrument",
+                day_title="Investments Made",
+                cat_title="Total Investments by Category",
+                no_data_msg="No data found in the selected range for Investment."
+            )
 
 elif authentication_status is False:
     st.error("❌ Username/password is incorrect")
