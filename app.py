@@ -201,25 +201,25 @@ if authentication_status:
             else:
                 return pd.DataFrame(), pd.DataFrame()
 
-        data = report_Data(8, 8, 9, 10, 11) 
-        if data:
-            df = pd.DataFrame(data, columns=["Date", "Category", "Expense", "Items"])
-            df['Expense'] = pd.to_numeric(df['Expense'], errors='coerce').fillna(0)
-            df.index += 1
-            with st.expander("View the Day to Day Expense"):
-                st.dataframe(df, use_container_width=True)
-
-            sum_df = df.groupby('Category')['Expense'].sum().reset_index()
-            sum_df.index += 1
-
-            with st.expander("View 💰 **Expense by Category**"):
-                st.dataframe(sum_df)
-
-            fig = px.bar(sum_df, x="Category", y="Expense", text="Expense", color="Category",
-                         title="Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
-            fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
-            fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-            st.plotly_chart(fig, use_container_width=True)
+        home_report = report_Datav1(8, 8, 9, 10, 11, "Date", "Category", "Expense", "Items")
+        if home_report:
+            home_exp, home_exp_cat = home_report
+        
+            if not home_exp.empty:
+                with st.expander("View the Day to Day Expense"):
+                    st.dataframe(home_exp, use_container_width=True)
+        
+            if not home_exp_cat.empty:
+                with st.expander("View 💰 **Expense by Category**"):
+                    st.dataframe(home_exp_cat, use_container_width=True)
+        
+                fig = px.bar(home_exp_cat, x="Category", y="Expense", text="Expense", color="Category",
+                             title="Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
+                fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+                fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("No Home Expense data available.")
         else:
             st.info("ℹ️ No data found in the selected range for Home Expense.")
 
@@ -246,7 +246,9 @@ if authentication_status:
                     st.info("No Personal Expense data available.")
             else:
                 st.info("ℹ️ No data found in the selected range.")
-            st.write("Reserver Expense")
+                
+            st.write("Reserve Expense")
+            
             reserve_report = report_Datav1(7, 13, 14, 15, 16, "Date", "Category", "Expense", "Items") 
             if reserve_report:
                 reserve_exp, reserve_exp_cat = reserve_report
