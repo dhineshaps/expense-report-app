@@ -311,29 +311,32 @@ if authentication_status:
                 st.info("ℹ️ No data found in the selected range.")
             
 
-            inv_exp,inv_exp_cat = report_Datav1(7,23,24,25,26,"Date","Category","Investment","Instrument")
-            
-            if not inv_exp.empty and not inv_exp_cat.empty:
-                with st.expander("View 💰 **Investment Made**"):
-                    st.dataframe(inv_exp)
-
-                with st.expander("View 💰 **Total Investments by by Category**"):
-                    st.dataframe(inv_exp_cat)
-
-                fig3 = px.bar(
-                    inv_exp_cat,
-                    x="Category",
-                    y="Investment",
-                    text="Investment",
-                    color="Category",
-                    title="Investments by Category",
-                    labels={"Expense": "₹ Amount", "Category": "Expense Type"}
-                )
-                fig3.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
-                fig3.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-                st.plotly_chart(fig3, use_container_width=True)
+            result = inv_exp,inv_exp_cat = report_Datav1(7,23,24,25,26,"Date","Category","Investment","Instrument")
+            if result: 
+                if not inv_exp.empty and not inv_exp_cat.empty:
+                    with st.expander("View 💰 **Investment Made**"):
+                        st.dataframe(inv_exp)
+    
+                    with st.expander("View 💰 **Total Investments by by Category**"):
+                        st.dataframe(inv_exp_cat)
+    
+                    fig3 = px.bar(
+                        inv_exp_cat,
+                        x="Category",
+                        y="Investment",
+                        text="Investment",
+                        color="Category",
+                        title="Investments by Category",
+                        labels={"Expense": "₹ Amount", "Category": "Expense Type"}
+                    )
+                    fig3.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+                    fig3.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+                    st.plotly_chart(fig3, use_container_width=True)
+                else:
+                  st.warning("No investment data available.")
             else:
-                st.warning("No investment data available.")
+                 st.error("Failed to retrieve data.")
+                
 
                 
 
