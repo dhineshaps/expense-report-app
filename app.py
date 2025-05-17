@@ -215,6 +215,8 @@ if authentication_status:
                 sum_df.index = range(1, len(sum_df) + 1)
                 #sum_df = sum_df.index + 1
                 return df,sum_df
+            else:
+                return pd.DataFrame(), pd.DataFrame()
             
         data = report_Data(8,8,9,10,11) 
         if data:
