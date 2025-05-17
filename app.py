@@ -11,7 +11,7 @@ import plotly.express as px
 
 st.set_page_config(page_title="Expense Tracker", layout="wide")
 
-# --- Reset logic ---
+
 if "reset_triggered" in st.session_state and st.session_state.reset_triggered:
     st.session_state.expense_input = ""
     st.session_state.items_input = ""
@@ -20,7 +20,6 @@ if "reset_triggered" in st.session_state and st.session_state.reset_triggered:
     st.session_state.reset_triggered = False
     st.rerun()
 
-# --- Title ---
 left_co, cent_co, last_co = st.columns(3)
 with cent_co:
     new_title = '<p style="font-family:fantasy; color:#DAA520; font-size: 42px;">The FET Quest</p>'
@@ -51,7 +50,6 @@ footer = """
 """
 st.markdown(footer, unsafe_allow_html=True)
 
-# --- Auth Config ---
 config = yaml.safe_load(st.secrets["auth"]["config"])
 authenticator = stauth.Authenticate(
     config['credentials'],
@@ -208,7 +206,7 @@ if authentication_status:
                     st.dataframe(home_exp_cat, use_container_width=True)
         
                 fig = px.bar(home_exp_cat, x="Category", y="Expense", text="Expense", color="Category",
-                             title="Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
+                             title="Home Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
                 fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
                 fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
                 st.plotly_chart(fig, use_container_width=True)
@@ -233,7 +231,7 @@ if authentication_status:
                         st.dataframe(personal_exp_cat, use_container_width=True)
             
                     fig = px.bar(personal_exp_cat, x="Category", y="Expense", text="Expense", color="Category",
-                                 title="Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
+                                 title="Personal Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
                     fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
                     fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
                     st.plotly_chart(fig, use_container_width=True)
@@ -241,6 +239,32 @@ if authentication_status:
                     st.info("No Personal Expense data available.")
             else:
                 st.info("ℹ️ No data found in the selected range.")
+
+            ######################################################################################################
+            st.subheader("🐖💰 Savings")
+            savings_report = report_Data(7, 18, 19, 20, 21, "Date", "Category", "Amount", "Items") 
+            if savings_report:
+            
+                savings_data, savings_by_category = savings_report
+            
+                if not savings_data.empty:
+                    with st.expander("View the Day-to-Day Savings"):
+                        st.dataframe(savings_data, use_container_width=True)
+            
+                if not savings_by_category.empty:
+                    with st.expander("View 💵 **Savings by Category**"):
+                        st.dataframe(savings_by_category, use_container_width=True)
+            
+                    fig = px.bar(savings_by_category, x="Category", y="Amount", text="Amount", color="Category",
+                                 title="Savings by Category", labels={"Amount": "₹ Amount", "Category": "Savings Type"})
+                    fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+                    fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+                    st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.info("No Savings data available.")
+            else:
+                st.info("ℹ️ No data found in the selected range for Savings.")
+
             ###########################################################################################################    
             st.subheader("💰 Reserve Expense")
             
@@ -256,7 +280,7 @@ if authentication_status:
                         st.dataframe(reserve_exp_cat, use_container_width=True)
 
                     fig2 = px.bar(reserve_exp_cat, x="Category", y="Expense", text="Expense", color="Category",
-                                  title="Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
+                                  title="Reserve Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
                     fig2.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
                     fig2.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
                     st.plotly_chart(fig2, use_container_width=True)
@@ -277,7 +301,7 @@ if authentication_status:
                         st.dataframe(inv_exp_cat)
 
                     fig3 = px.bar(inv_exp_cat, x="Category", y="Investment", text="Investment", color="Category",
-                                  title="Investments by Category", labels={"Investment": "₹ Amount", "Category": "Investment Type"})
+                                  title="Investment Made", labels={"Investment": "₹ Amount", "Category": "Investment Type"})
                     fig3.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
                     fig3.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
                     st.plotly_chart(fig3, use_container_width=True)
@@ -285,7 +309,7 @@ if authentication_status:
                     st.warning("No investment data available.")
             else:
                 st.error("Failed to retrieve data.")
-
+             ######################################################################################################
 elif authentication_status is False:
     st.error("❌ Username/password is incorrect")
 
