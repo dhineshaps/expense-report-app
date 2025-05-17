@@ -286,29 +286,29 @@ if authentication_status:
             reserve_report = report_Datav1(7,13,14,15,16,"Date", "Category", "Expense", "Items") 
 			
             if reserver_report:
-			  reserve_exp,reserve_exp_cat = reserve_report
-			   if not reserve_exp.empty:
-					with st.expander("View the Reserve Expense"):
-						st.dataframe(reserve_exp, use_container_width=True)
-						
-               if not reserve_exp_cat.empty:
-					with st.expander("View 💰 **Expense by Category for Reserve Expense**"):
-						st.dataframe(reserve_exp_cat, use_container_width=True)
+		reserve_exp,reserve_exp_cat = reserve_report
+		  if not reserve_exp.empty:
+		     with st.expander("View the Reserve Expense"):
+			 st.dataframe(reserve_exp, use_container_width=True)
+				
+                  if not reserve_exp_cat.empty:
+		     with st.expander("View 💰 **Expense by Category for Reserve Expense**"):
+			  st.dataframe(reserve_exp_cat, use_container_width=True)
 
-                fig2 = px.bar(
-                    reserve_exp_cat,
-                    x="Category",
-                    y="Expense",
-                    text="Expense",
-                    color="Category",
-                    title="Expenses by Category",
-                    labels={"Expense": "₹ Amount", "Category": "Expense Type"}
-                )
-                fig2.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
-                fig2.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-                st.plotly_chart(fig2, use_container_width=True)
-              else:
-                st.info("No Reserve Expense data available.")
+	                fig2 = px.bar(
+	                    reserve_exp_cat,
+	                    x="Category",
+	                    y="Expense",
+	                    text="Expense",
+	                    color="Category",
+	                    title="Expenses by Category",
+	                    labels={"Expense": "₹ Amount", "Category": "Expense Type"}
+	                )
+	                fig2.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+	                fig2.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+	                st.plotly_chart(fig2, use_container_width=True)
+                  else:
+                      st.info("No Reserve Expense data available.")
             else:
                 st.info("ℹ️ No data found in the selected range."
   
