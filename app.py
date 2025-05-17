@@ -11,7 +11,7 @@ import plotly.express as px
 
 st.set_page_config(page_title="Expense Tracker", layout="wide")
 
-# --- Reset logic ---
+
 if "reset_triggered" in st.session_state and st.session_state.reset_triggered:
     st.session_state.expense_input = ""
     st.session_state.items_input = ""
@@ -20,7 +20,6 @@ if "reset_triggered" in st.session_state and st.session_state.reset_triggered:
     st.session_state.reset_triggered = False
     st.rerun()
 
-# --- Title ---
 left_co, cent_co, last_co = st.columns(3)
 with cent_co:
     new_title = '<p style="font-family:fantasy; color:#DAA520; font-size: 42px;">The FET Quest</p>'
@@ -41,7 +40,6 @@ footer = """
         z-index: 9999;
         border-top: 1px solid #ccc;
     }
-
     .stApp {
         padding-bottom: 60px;
     }
@@ -52,7 +50,6 @@ footer = """
 """
 st.markdown(footer, unsafe_allow_html=True)
 
-# --- Auth Config ---
 config = yaml.safe_load(st.secrets["auth"]["config"])
 authenticator = stauth.Authenticate(
     config['credentials'],
@@ -80,11 +77,9 @@ def get_gspread_client(sheet_name):
     scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
     creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
     client = gspread.authorize(creds)
-    #spreadsheet_id = "1r2OjJNEFZKKHtQ7CMwman06YGFewptPheL2D1N4t1uk"
     spreadsheet_id = st.secrets["sheet_id"]
     return client.open_by_key(spreadsheet_id).worksheet(sheet_name)
 
-# --- Find next empty row based on column group ---
 def get_next_available_row(sheet, column_letters, start_row=2):
     max_row = start_row
     for col_letter in column_letters:
@@ -95,7 +90,6 @@ def get_next_available_row(sheet, column_letters, start_row=2):
             max_row = last_filled + 1
     return max_row
 
-# --- Insert data into mapped columns ---
 def insert_mapped_data(sheet, data_map):
     for col, (r, val) in data_map.items():
         sheet.update_acell(f"{col}{r}", val)
@@ -111,35 +105,28 @@ if authentication_status:
     if page in ["Add Home Expense", "Add Personal Expense", "Purchase from Reserve", "Savings", "Investment"]:
         if page == "Add Personal Expense":
             st.write("Dhinesh's Personal Expenses Only")
+
         with st.form("expense_form"):
             st.subheader("Enter Expense Details")
             date_input = st.date_input("📅 Date", value=st.session_state.get("date_input", date.today()), key="date_input")
             formatted_date = date_input.strftime("%d-%m-%Y")
+
             if page == "Add Home Expense":
-                category = st.selectbox("📂 Category", (
-                    "Grocery", "Vegetables", "Fruits", "Gas", "Cab", "Snacks", "Entertainment",
-                    "Tickets", "Rent", "Home Maint", "Tea and Snacks", "Food", "Non-Veg",
-                    "Egg", "Personal wellness", "Others"
-                ), key="category_input")
+                category = st.selectbox("📂 Category", ("Grocery", "Vegetables", "Fruits", "Gas", "Cab", "Snacks", "Entertainment",
+                                                        "Tickets", "Rent", "Home Maint", "Tea and Snacks", "Food", "Non-Veg",
+                                                        "Egg", "Personal wellness", "Others"), key="category_input")
             elif page == "Add Personal Expense":
-                category = st.selectbox("📂 Category", (
-                    "EMI", "Dad", "Vijaya", "Tea and Snacks", "Fruits", "Cab", "Snacks", "Home Snacks", "Home Spend",
-                    "Entertainment", "Juice", "Donation", "Tickets", "Lent", "Loan Repayment", "Home Maint", "Food",
-                    "Non-Veg", "Egg", "Personal wellness", "Ecommerce", "Others"
-                ), key="category_input")
+                category = st.selectbox("📂 Category", ("EMI", "Dad", "Vijaya", "Tea and Snacks", "Fruits", "Cab", "Snacks",
+                                                        "Home Snacks", "Home Spend", "Entertainment", "Juice", "Donation", "Tickets",
+                                                        "Lent", "Loan Repayment", "Home Maint", "Food", "Non-Veg", "Egg",
+                                                        "Personal wellness", "Ecommerce", "Others"), key="category_input")
             elif page == "Purchase from Reserve":
-                category = st.selectbox("📂 Category", (
-                    "Donation", "Lent", "Loan Repayment", "Home Maint", "Personal wellness", "Ecommerce", "Others", "Gift",
-                    "Electronics","Furniture"
-                ), key="category_input")
+                category = st.selectbox("📂 Category", ("Donation", "Lent", "Loan Repayment", "Home Maint", "Personal wellness",
+                                                        "Ecommerce", "Others", "Gift", "Electronics", "Furniture"), key="category_input")
             elif page == "Savings":
-                category = st.selectbox("📂 Category", (
-                    "Last Month Pass Over", "Gift", "Others"
-                ), key="category_input")
+                category = st.selectbox("📂 Category", ("Last Month Pass Over", "Gift", "Others"), key="category_input")
             elif page == "Investment":
-                category = st.selectbox("📂 Category", (
-                    "Gold", "Equity", "Bonds", "Mutual Funds"
-                ), key="category_input")
+                category = st.selectbox("📂 Category", ("Gold", "Equity", "Bonds", "Mutual Funds"), key="category_input")
 
             if page == "Savings":
                 expense = st.text_input("💸 Savings in Rs.", key="expense_input")
@@ -183,161 +170,146 @@ if authentication_status:
             st.rerun()
 
     elif page == "Reports":
-        st.subheader("📊 Monthly Report Viewer")
-        def report_Data(sheetNo,col1,col2,col3,col4):   
-            sheet = get_gspread_client(Sheet)
-            start_row = sheetNo
-            col_1 = sheet.col_values(col1)[start_row - 1:]
-            col_2 = sheet.col_values(col2)[start_row - 1:]
-            col_3 = sheet.col_values(col3)[start_row - 1:]
-            col_4 = sheet.col_values(col4)[start_row - 1:]
-            data = list(zip(col_1, col_2, col_3, col_4))                
-            return data
+        st.title("📊 Monthly Report Viewer")
 
-        def report_Datav1(sheetNo,col1,col2,col3,col4,colname1,colname2,colname3,colname4):   
+        def report_Data(sheetNo, col1, col2, col3, col4, colname1, colname2, colname3, colname4):   
             sheet = get_gspread_client(Sheet)
-            start_row = sheetNo
-            col_1 = sheet.col_values(col1)[start_row - 1:]
-            col_2 = sheet.col_values(col2)[start_row - 1:]
-            col_3 = sheet.col_values(col3)[start_row - 1:]
-            col_4 = sheet.col_values(col4)[start_row - 1:]
+            col_1 = sheet.col_values(col1)[sheetNo - 1:]
+            col_2 = sheet.col_values(col2)[sheetNo - 1:]
+            col_3 = sheet.col_values(col3)[sheetNo - 1:]
+            col_4 = sheet.col_values(col4)[sheetNo - 1:]
             data = list(zip(col_1, col_2, col_3, col_4)) 
 
             if data:
-                df = pd.DataFrame(data, columns=[colname1, colname2, colname3,colname4])
+                df = pd.DataFrame(data, columns=[colname1, colname2, colname3, colname4])
                 df[colname3] = pd.to_numeric(df[colname3], errors='coerce').fillna(0)
-                df.index = df.index + 1
-                # with st.expander("View the Day to Day Expense"):
-                #     st.dataframe(df, use_container_width=True)
+                df.index += 1
                 grouped = df.groupby(colname2)
-                sum_by_category = grouped[colname3].sum()
-                sum_df = sum_by_category.reset_index()
-                sum_df.index = range(1, len(sum_df) + 1)
-                #sum_df = sum_df.index + 1
-                return df,sum_df
-            
-        data = report_Data(8,8,9,10,11) 
-        if data:
-            df = pd.DataFrame(data, columns=["Date", "Category", "Expense", "Items"])
-            df['Expense'] = pd.to_numeric(df['Expense'], errors='coerce').fillna(0)
-            df.index = df.index + 1
-            with st.expander("View the Day to Day Expense"):
-                st.dataframe(df, use_container_width=True)
-
-            grouped = df.groupby('Category')
-            sum_by_category = grouped['Expense'].sum()
-            sum_df = sum_by_category.reset_index()
-            sum_df.index = range(1, len(sum_df) + 1)
-
-            with st.expander("View 💰 **Expense by Category**"):
-                st.dataframe(sum_df)
-
-            fig = px.bar(
-                sum_df,
-                x="Category",
-                y="Expense",
-                text="Expense",
-                color="Category",
-                title="Expenses by Category",
-                labels={"Expense": "₹ Amount", "Category": "Expense Type"}
-            )
-            fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
-            fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-            st.plotly_chart(fig, use_container_width=True)
+                sum_df = grouped[colname3].sum().reset_index()
+                sum_df.index += 1
+                return df, sum_df
+            else:
+                return pd.DataFrame(), pd.DataFrame()
+                
+        st.subheader("🏠 Home Expenses")
+        
+        home_report = report_Data(8, 8, 9, 10, 11, "Date", "Category", "Expense", "Items")
+        if home_report:
+            home_exp, home_exp_cat = home_report
+        
+            if not home_exp.empty:
+                with st.expander("View the Day to Day Expense"):
+                    st.dataframe(home_exp, use_container_width=True)
+        
+            if not home_exp_cat.empty:
+                with st.expander("View 💰 **Expense by Category**"):
+                    st.dataframe(home_exp_cat, use_container_width=True)
+        
+                fig = px.bar(home_exp_cat, x="Category", y="Expense", text="Expense", color="Category",
+                             title="Home Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
+                fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+                fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("No Home Expense data available.")
         else:
             st.info("ℹ️ No data found in the selected range for Home Expense.")
-
+        ######################################################################################################
         if username == "dhinesh":
-            data1 = report_Data(7,2,3,4,5) 
-            if data1:
-                df1 = pd.DataFrame(data1, columns=["Date", "Category", "Expense", "Items"])
-                df1['Expense'] = pd.to_numeric(df1['Expense'], errors='coerce').fillna(0)
-                df1.index = df1.index + 1
-                with st.expander("View the Personal Day to Day Expense"):
-                    st.dataframe(df1, use_container_width=True)
-
-                grouped1 = df1.groupby('Category')
-                sum_by_category1 = grouped1['Expense'].sum()
-                sum_df1 = sum_by_category1.reset_index()
-                sum_df1.index = range(1, len(sum_df1) + 1)
-
-                with st.expander("View 💰 **Expense by Category for Personal**"):
-                    st.dataframe(sum_df1)
-
-                fig1 = px.bar(
-                    sum_df1,
-                    x="Category",
-                    y="Expense",
-                    text="Expense",
-                    color="Category",
-                    title="Expenses by Category",
-                    labels={"Expense": "₹ Amount", "Category": "Expense Type"}
-                )
-                fig1.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
-                fig1.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-                st.plotly_chart(fig1, use_container_width=True)
+            st.subheader("🧑 Personal Expenses")
+            personal_report = report_Data(7, 2, 3, 4, 5, "Date", "Category", "Expense", "Items") 
+            if personal_report:
+                
+                personal_exp, personal_exp_cat = personal_report
+            
+                if not personal_exp.empty:
+                    with st.expander("View the Personal Day to Day Expense"):
+                        st.dataframe(personal_exp, use_container_width=True)
+            
+                if not personal_exp_cat.empty:
+                    with st.expander("View 💰 **Expense by Category for Personal**"):
+                        st.dataframe(personal_exp_cat, use_container_width=True)
+            
+                    fig = px.bar(personal_exp_cat, x="Category", y="Expense", text="Expense", color="Category",
+                                 title="Personal Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
+                    fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+                    fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+                    st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.info("No Personal Expense data available.")
             else:
                 st.info("ℹ️ No data found in the selected range.")
-                
-            data2 = report_Data(7,13,14,15,16) 
-            if data1:
-                df2 = pd.DataFrame(data2, columns=["Date", "Category", "Expense", "Items"])
-                df2['Expense'] = pd.to_numeric(df2['Expense'], errors='coerce').fillna(0)
-                df2.index = df2.index + 1
-                with st.expander("View the Reserve Expense"):
-                    st.dataframe(df2, use_container_width=True)
 
-                grouped2 = df2.groupby('Category')
-                sum_by_category2 = grouped2['Expense'].sum()
-                sum_df2 = sum_by_category2.reset_index()
-                sum_df2.index = range(1, len(sum_df2) + 1)
+            ######################################################################################################
+            st.subheader("🐖💰 Savings")
+            savings_report = report_Data(7, 18, 19, 20, 21, "Date", "Category", "Amount", "Items") 
+            if savings_report:
+            
+                savings_data, savings_by_category = savings_report
+            
+                if not savings_data.empty:
+                    with st.expander("View the Day-to-Day Savings"):
+                        st.dataframe(savings_data, use_container_width=True)
+            
+                if not savings_by_category.empty:
+                    with st.expander("View 💵 **Savings by Category**"):
+                        st.dataframe(savings_by_category, use_container_width=True)
+            
+                    fig = px.bar(savings_by_category, x="Category", y="Amount", text="Amount", color="Category",
+                                 title="Savings by Category", labels={"Amount": "₹ Amount", "Category": "Savings Type"})
+                    fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+                    fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+                    st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.info("No Savings data available.")
+            else:
+                st.info("ℹ️ No data found in the selected range for Savings.")
 
-                with st.expander("View 💰 **Expense by Category for Reserve Expense**"):
-                    st.dataframe(sum_df2)
+            ###########################################################################################################    
+            st.subheader("💰 Reserve Expense")
+            
+            reserve_report = report_Data(7, 13, 14, 15, 16, "Date", "Category", "Expense", "Items") 
+            if reserve_report:
+                reserve_exp, reserve_exp_cat = reserve_report
+                if not reserve_exp.empty:
+                    with st.expander("View the Reserve Expense"):
+                        st.dataframe(reserve_exp, use_container_width=True)
 
-                fig2 = px.bar(
-                    sum_df2,
-                    x="Category",
-                    y="Expense",
-                    text="Expense",
-                    color="Category",
-                    title="Expenses by Category",
-                    labels={"Expense": "₹ Amount", "Category": "Expense Type"}
-                )
-                fig2.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
-                fig2.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-                st.plotly_chart(fig2, use_container_width=True)
+                if not reserve_exp_cat.empty:
+                    with st.expander("View 💰 **Expense by Category for Reserve Expense**"):
+                        st.dataframe(reserve_exp_cat, use_container_width=True)
+
+                    fig2 = px.bar(reserve_exp_cat, x="Category", y="Expense", text="Expense", color="Category",
+                                  title="Reserve Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
+                    fig2.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+                    fig2.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+                    st.plotly_chart(fig2, use_container_width=True)
+                else:
+                    st.info("No Reserve Expense data available.")
             else:
                 st.info("ℹ️ No data found in the selected range.")
-            
+            ######################################################################################################
+            st.subheader("📈 Investment Spend")
+            result = report_Data(7, 23, 24, 25, 26, "Date", "Category", "Investment", "Instrument")
+            if result:
+                inv_exp, inv_exp_cat = result
+                if not inv_exp.empty:
+                    with st.expander("View 💰 **Investment Made**"):
+                        st.dataframe(inv_exp)
+                if not inv_exp_cat.empty:
+                    with st.expander("View 💰 **Total Investments by Category**"):
+                        st.dataframe(inv_exp_cat)
 
-            inv_exp,inv_exp_cat = report_Datav1(7,23,24,25,26,"Date","Category","Investment","Instrument")
-            
-            if not inv_exp.empty and not inv_exp_cat.empty:
-                with st.expander("View 💰 **Investment Made**"):
-                    st.dataframe(inv_exp)
-
-                with st.expander("View 💰 **Total Investments by by Category**"):
-                    st.dataframe(inv_exp_cat)
-
-                fig3 = px.bar(
-                    inv_exp_cat,
-                    x="Category",
-                    y="Investment",
-                    text="Investment",
-                    color="Category",
-                    title="Investments by Category",
-                    labels={"Expense": "₹ Amount", "Category": "Expense Type"}
-                )
-                fig3.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
-                fig3.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-                st.plotly_chart(fig3, use_container_width=True)
+                    fig3 = px.bar(inv_exp_cat, x="Category", y="Investment", text="Investment", color="Category",
+                                  title="Investment Made", labels={"Investment": "₹ Amount", "Category": "Investment Type"})
+                    fig3.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
+                    fig3.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+                    st.plotly_chart(fig3, use_container_width=True)
+                else:
+                    st.warning("No investment data available.")
             else:
-                st.warning("No investment data available.")
-
-                
-
-
+                st.error("Failed to retrieve data.")
+             ######################################################################################################
 elif authentication_status is False:
     st.error("❌ Username/password is incorrect")
 
