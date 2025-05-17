@@ -311,12 +311,13 @@ if authentication_status:
                 st.info("ℹ️ No data found in the selected range.")
             
 
-            result = inv_exp,inv_exp_cat = report_Datav1(7,23,24,25,26,"Date","Category","Investment","Instrument")
+            result = report_Datav1(7,23,24,25,26,"Date","Category","Investment","Instrument")
             if result: 
-                if not inv_exp.empty and not inv_exp_cat.empty:
+                inv_exp,inv_exp_cat = result
+                if not inv_exp.empty:
                     with st.expander("View 💰 **Investment Made**"):
                         st.dataframe(inv_exp)
-    
+                if not inv_exp_cat.empty:
                     with st.expander("View 💰 **Total Investments by by Category**"):
                         st.dataframe(inv_exp_cat)
     
