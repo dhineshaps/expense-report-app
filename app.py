@@ -172,7 +172,7 @@ if authentication_status:
             st.rerun()
 
     elif page == "Reports":
-        st.subheader("📊 Monthly Report Viewer")
+        st.title("📊 Monthly Report Viewer")
 
         def report_Data(sheetNo, col1, col2, col3, col4, colname1, colname2, colname3, colname4):   
             sheet = get_gspread_client(Sheet)
@@ -192,7 +192,9 @@ if authentication_status:
                 return df, sum_df
             else:
                 return pd.DataFrame(), pd.DataFrame()
-
+                
+        st.subheader("🏠 Home Expenses")
+        
         home_report = report_Data(8, 8, 9, 10, 11, "Date", "Category", "Expense", "Items")
         if home_report:
             home_exp, home_exp_cat = home_report
@@ -214,8 +216,9 @@ if authentication_status:
                 st.info("No Home Expense data available.")
         else:
             st.info("ℹ️ No data found in the selected range for Home Expense.")
-
+        ######################################################################################################
         if username == "dhinesh":
+            st.subheader("🧑 Personal Expenses")
             personal_report = report_Data(7, 2, 3, 4, 5, "Date", "Category", "Expense", "Items") 
             if personal_report:
                 
@@ -238,8 +241,8 @@ if authentication_status:
                     st.info("No Personal Expense data available.")
             else:
                 st.info("ℹ️ No data found in the selected range.")
-                
-            st.write("Reserve Expense")
+            ###########################################################################################################    
+            st.subheader("💰 Reserve Expense")
             
             reserve_report = report_Data(7, 13, 14, 15, 16, "Date", "Category", "Expense", "Items") 
             if reserve_report:
@@ -261,7 +264,8 @@ if authentication_status:
                     st.info("No Reserve Expense data available.")
             else:
                 st.info("ℹ️ No data found in the selected range.")
-
+            ######################################################################################################
+            st.subheader("📈 Investment Spend")
             result = report_Data(7, 23, 24, 25, 26, "Date", "Category", "Investment", "Instrument")
             if result:
                 inv_exp, inv_exp_cat = result
