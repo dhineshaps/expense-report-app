@@ -117,7 +117,7 @@ if authentication_status:
                                                         "Egg", "Personal wellness", "Others"), key="category_input")
             elif page == "Add Personal Expense":
                 category = st.selectbox("📂 Category", ("EMI", "Dad", "Vijaya", "Tea and Snacks", "Fruits", "Cab", "Snacks","ATM Withdrawl",
-                                                        "Home Snacks", "Home Spend", "Entertainment", "Juice", "Donation", "Tickets",
+                                                        "Home Snacks", "Home Spend", "Entertainment", "Juice", "Donation","Home Fuel", "Tickets",
                                                         "Lent", "Loan Repayment", "Home Maint", "Food", "Non-Veg", "Egg",
                                                         "Personal wellness", "Ecommerce", "Others"), key="category_input")
             elif page == "Purchase from Reserve":
