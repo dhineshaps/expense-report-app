@@ -159,14 +159,14 @@ if authentication_status:
                 elif page == "Investment":
                     target_cols = ["W", "X", "Y", "Z"]
 
-                row = get_next_available_row(sheet, target_cols)
-                data_map = {
-                    target_cols[0]: (row, formatted_date),
-                    target_cols[1]: (row, category),
-                    target_cols[2]: (row, expense),
-                    target_cols[3]: (row, items),
-                }
-                inserted_row = insert_mapped_data(sheet, data_map)
+                # row = get_next_available_row(sheet, target_cols)
+                # data_map = {
+                #     target_cols[0]: (row, formatted_date),
+                #     target_cols[1]: (row, category),
+                #     target_cols[2]: (row, expense),
+                #     target_cols[3]: (row, items),
+                # }
+                # inserted_row = insert_mapped_data(sheet, data_map)
                 st.success(f"✅ Data inserted successfully into row {inserted_row}.")
 
         if reset:
