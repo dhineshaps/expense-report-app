@@ -163,7 +163,8 @@ if authentication_status:
                     target_cols[3]: (row, items),
                 }
                 inserted_row = insert_mapped_data(sheet, data_map)
-                st.success(f"✅ Data inserted successfully into row {inserted_row}.")
+                #st.success(f"✅ Data inserted successfully into row {inserted_row}.")
+                st.success(f"✅ Data inserted")
 
         if reset:
             st.session_state.reset_triggered = True
