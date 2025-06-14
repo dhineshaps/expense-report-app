@@ -69,7 +69,7 @@ month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
 Month = month_names[Mon - 1]
 #Sheet = f"{Month}_{yr}"
-Sheet = "July_2025"
+Sheet_new = "July_2025"
 
 
 @st.cache_resource
@@ -147,7 +147,7 @@ if authentication_status:
             elif not (formatted_date and category and expense and items):
                 st.error("❌ Please fill in all fields.")
             else:
-                sheet = get_gspread_client(Sheet)
+                sheet = get_gspread_client(Sheet_new)
                 if page == "Add Home Expense":
                     target_cols = ["H", "I", "J", "K"]
                 elif page == "Add Personal Expense":
