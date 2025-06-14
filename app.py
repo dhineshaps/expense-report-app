@@ -68,7 +68,8 @@ yr = int(date1.split("-")[2])
 month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
 Month = month_names[Mon - 1]
-Sheet = f"{Month}_{yr}"
+#Sheet = f"{Month}_{yr}"
+Sheet = "July_2025"
 
 
 @st.cache_resource
@@ -78,7 +79,10 @@ def get_gspread_client(sheet_name):
     creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
     client = gspread.authorize(creds)
     spreadsheet_id = st.secrets["sheet_id"]
-    return client.open_by_key(spreadsheet_id).worksheet(sheet_name)
+    try:
+        return client.open_by_key(spreadsheet_id).worksheet(sheet_name)
+    except gspread.exceptions.WorksheetNotFound:
+        print(f"Sheet '{sheet_name}' does not exist.")
 
 def get_next_available_row(sheet, column_letters, start_row=2):
     max_row = start_row
