@@ -194,7 +194,7 @@ if authentication_status:
                 
         st.subheader("🏠 Home Expenses")
         
-        home_report = report_Data(8, 8, 9, 10, 11, "Date", "Category", "Expense", "Items")
+        home_report = report_Data(7, 8, 9, 10, 11, "Date", "Category", "Expense", "Items")
         if home_report:
             home_exp, home_exp_cat = home_report
         
