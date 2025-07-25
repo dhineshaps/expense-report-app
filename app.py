@@ -181,6 +181,12 @@ def get_or_create_worksheet(spreadsheet, sheet_name):
         worksheet.update_acell('I4', '=MINUS(G7,J3)')
         worksheet.update_acell('O3', '=sum(O7:O)')
         worksheet.update_acell('Y3', '=sum(Y7:Y)')
+        worksheet.update_acell('C3', 'Total Expense')
+        worksheet.update_acell('C4', 'Available')
+        worksheet.update_acell('H3', 'Total Expense')
+        worksheet.update_acell('H4', 'Available')
+        worksheet.update_acell('N3', 'Total Expense')
+        orksheet.update_acell('X3', 'Total Investment')
         st.info("Formulas updated")
         st.info("Formatting") 
         set_header_colors(worksheet)
@@ -287,8 +293,30 @@ if authentication_status:
    
         spreadsheet = get_gspread_client(Sheet)
         sheet = get_or_create_worksheet(spreadsheet, Sheet)
-        cell_value_a1 = sheet.acell('J7').value
-        st.metric(label="Your Balance", value=f"₹{cell_value_a1}")
+        with st.expander(f"{Sheet} Expenses and Investments"):
+        #st.subheader(f"{Sheet} Expenses and Investments")
+            Total_Expense = sheet.acell('D3').value
+            Available_Fund = sheet.acell('D4').value
+            Total_Home_Expense = sheet.acell('J3').value
+            Available_Home_Expense_Fund = sheet.acell('I4').value
+            Purchase_From_Reserve = sheet.acell('O3').value
+            Investment_Made = sheet.acell('Y3').value
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric(label="Total Expense Including Home Expense", value=f"₹{Total_Expense}")
+            with col2:
+                st.metric(label="Available Fund", value=f"₹{Available_Fund}")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric(label="Total Home Expense", value=f"₹{Total_Home_Expense}")
+            with col2:
+                st.metric(label="Available Home Expense Fund", value=f"₹{Available_Home_Expense_Fund}")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric(label="Purchase From Reserve", value=f"₹{Purchase_From_Reserve}")
+            with col2:
+                st.metric(label="Investment Made", value=f"₹{Investment_Made}")
+         
 
 
         def report_Data(sheetNo, col1, col2, col3, col4, colname1, colname2, colname3, colname4):   
