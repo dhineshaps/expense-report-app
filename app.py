@@ -8,10 +8,12 @@ from google.oauth2.service_account import Credentials
 import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
+from gspread.exceptions import WorksheetNotFound
+import sys
 
 st.set_page_config(page_title="Expense Tracker", layout="wide")
 
-#
+
 if "reset_triggered" in st.session_state and st.session_state.reset_triggered:
     st.session_state.expense_input = ""
     st.session_state.items_input = ""
@@ -19,6 +21,29 @@ if "reset_triggered" in st.session_state and st.session_state.reset_triggered:
     st.session_state.date_input = date.today()
     st.session_state.reset_triggered = False
     st.rerun()
+
+
+
+#Initialize session state values to avoid KeyErrors
+# defaults = {
+#     "reset_triggered": False,
+#     "expense_input": "",
+#     "items_input": "",
+#     "category_input": "Grocery",
+#     "date_input": date.today()
+# }
+
+# for key, val in defaults.items():
+#     if key not in st.session_state:
+#         st.session_state[key] = val
+		
+# if "reset_triggered" in st.session_state and st.session_state.reset_triggered:
+#     st.session_state.expense_input = ""
+#     st.session_state.items_input = ""
+#     st.session_state.category_input = ""
+#     st.session_state.date_input = date.today()
+#     st.session_state.reset_triggered = False
+#     st.rerun()
 
 left_co, cent_co, last_co = st.columns(3)
 with cent_co:
@@ -58,6 +83,20 @@ authenticator = stauth.Authenticate(
     config['cookie']['expiry_days']
 )
 
+######################### added to handle the session state ##########################################
+# defaults = {
+#     "reset_triggered": False,
+#     "expense_input": "",
+#     "items_input": "",
+#     "category_input": "",  # <- empty so page can set it contextually
+#     "date_input": date.today()
+# }
+
+# for key, val in defaults.items():
+#     if key not in st.session_state:
+#         st.session_state[key] = val
+######################### added to handle the session state ##########################################
+
 st.title("📒 Expense Tracker")
 name, authentication_status, username = authenticator.login('Login', 'main')
 
@@ -70,7 +109,6 @@ month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 Month = month_names[Mon - 1]
 Sheet = f"{Month}_{yr}"
 
-
 @st.cache_resource
 def get_gspread_client(sheet_name):
     creds_dict = st.secrets["connections"]["expense"]
@@ -78,7 +116,77 @@ def get_gspread_client(sheet_name):
     creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
     client = gspread.authorize(creds)
     spreadsheet_id = st.secrets["sheet_id"]
-    return client.open_by_key(spreadsheet_id).worksheet(sheet_name)
+    return client.open_by_key(spreadsheet_id)
+    #return client.open_by_key(spreadsheet_id).worksheet(sheet_name)
+
+def set_header_colors(worksheet):
+    sheet_id = worksheet._properties.get("sheetId")
+    color_groups = [
+        (0, 4, {"red": 0.9, "green": 0.9, "blue": 0.9}),   # Group 1: Income
+        (6, 10, {"red": 0.8, "green": 0.93, "blue": 0.8}),  # Group 2: Allocation
+        (12, 15, {"red": 0.8, "green": 0.85, "blue": 1.0}), # Group 3: Purchase from Reserve
+        (17, 20, {"red": 1.0, "green": 0.9, "blue": 0.8}),  # Group 4: Reserve
+        (22, 25, {"red": 1.0, "green": 1.0, "blue": 0.8})   # Group 5: Investment
+    ]
+
+    requests = []
+
+    for start_col, end_col, color in color_groups:
+        requests.append({
+            "updateCells": {
+                "range": {
+                    "sheetId": sheet_id,
+                    "startRowIndex": 5,  # Row 6 (0-based index)
+                    "endRowIndex": 6,
+                    "startColumnIndex": start_col,
+                    "endColumnIndex": end_col + 1  # include end column
+                },
+                "rows": [
+                    {
+                        "values": [
+                            {
+                                "userEnteredFormat": {
+                                    "backgroundColor": color
+                                }
+                            }
+                        ] * (end_col - start_col + 1)
+                    }
+                ],
+                "fields": "userEnteredFormat.backgroundColor"
+            }
+        })
+
+    # Apply color formatting
+    worksheet.spreadsheet.batch_update({"requests": requests})
+
+def get_or_create_worksheet(spreadsheet, sheet_name):
+    try:
+        return spreadsheet.worksheet(sheet_name)
+    except WorksheetNotFound:
+        st.warning(f"Worksheet '{sheet_name}' not found. Creating it now.")
+        worksheet = spreadsheet.add_worksheet(title=sheet_name, rows="100", cols="26")
+        headers = [
+            "Income", "Date", "Expenses", "Amount", "Add-on", "",
+            "Allocation", "Date", "Expenses", "Amount", "Items", "",
+            "Date", "Purchase from Reserve", "Amount", "Items", "",
+            "Date", "Reserve", "Amount", "Item", "",
+            "Date", "Investment", "Amout", "Item"
+        ]
+        cell_range = f"A6:{chr(64 + len(headers))}6"  # chr(64 + 26) = 'Z'
+        worksheet.update(cell_range, [headers])
+        st.info("Updating the formula")
+        worksheet.update_acell('D3', '=SUM(D7:D)')
+        worksheet.update_acell('D4', '=MINUS(A7, LEFT(D3, 3))')
+        worksheet.update_acell('J3', '=sum(J7:J)')
+        worksheet.update_acell('I4', '=MINUS(G7,J3)')
+        worksheet.update_acell('O3', '=sum(O7:O)')
+        worksheet.update_acell('Y3', '=sum(Y7:Y)')
+        st.info("Formulas updated")
+        st.info("Formatting") 
+        set_header_colors(worksheet)
+        st.info("Formatting Completed")
+        return worksheet
+
 
 def get_next_available_row(sheet, column_letters, start_row=2):
     max_row = start_row
@@ -113,7 +221,7 @@ if authentication_status:
 
             if page == "Add Home Expense":
                 category = st.selectbox("📂 Category", ("Grocery", "Vegetables", "Fruits", "Gas","Fuel","Dress", "Cab", "Snacks", "Entertainment",
-                                                        "Tickets", "Rent", "Home Maint","Wifi", "Tea and Snacks", "Food", "Non-Veg", "Pharmacy",
+                                                         "Tickets", "Rent", "Home Maint","Wifi", "Tea and Snacks", "Food", "Non-Veg", "Pharmacy",
                                                         "Egg", "Personal wellness","Mobile Recharge", "Others"), key="category_input")
             elif page == "Add Personal Expense":
                 category = st.selectbox("📂 Category", ("EMI", "Dad", "Vijaya", "Tea and Snacks", "Fruits", "Cab", "Snacks","ATM Withdrawl",
@@ -144,7 +252,10 @@ if authentication_status:
             elif not (formatted_date and category and expense and items):
                 st.error("❌ Please fill in all fields.")
             else:
-                sheet = get_gspread_client(Sheet)
+                #sheet = get_gspread_client(Sheet)
+                spreadsheet = get_gspread_client(Sheet)
+                sheet = get_or_create_worksheet(spreadsheet, Sheet)
+
                 if page == "Add Home Expense":
                     target_cols = ["H", "I", "J", "K"]
                 elif page == "Add Personal Expense":
@@ -165,7 +276,7 @@ if authentication_status:
                 }
                 inserted_row = insert_mapped_data(sheet, data_map)
                 st.success(f"✅ Data inserted successfully into row {inserted_row}.")
-                #st.success(f"✅ Data inserted")
+            #st.success(f"✅ Data inserted")
 
         if reset:
             st.session_state.reset_triggered = True
@@ -173,9 +284,17 @@ if authentication_status:
 
     elif page == "Reports":
         st.title("📊 Monthly Report Viewer")
+   
+        spreadsheet = get_gspread_client(Sheet)
+        sheet = get_or_create_worksheet(spreadsheet, Sheet)
+        cell_value_a1 = sheet.acell('J7').value
+        st.metric(label="Your Balance", value=f"₹{cell_value_a1}")
+
 
         def report_Data(sheetNo, col1, col2, col3, col4, colname1, colname2, colname3, colname4):   
-            sheet = get_gspread_client(Sheet)
+            #sheet = get_gspread_client(Sheet)
+            spreadsheet = get_gspread_client(Sheet)
+            sheet = get_or_create_worksheet(spreadsheet, Sheet)
             col_1 = sheet.col_values(col1)[sheetNo - 1:]
             col_2 = sheet.col_values(col2)[sheetNo - 1:]
             col_3 = sheet.col_values(col3)[sheetNo - 1:]
