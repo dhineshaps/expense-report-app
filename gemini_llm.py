@@ -31,7 +31,7 @@ def analyze_home_expenses(df_home,home_exp_cat,total_spent,allocation):
 
     days_remaining = total_days_in_month - today.day
 
-    available_fund = allocation - total_spent
+    available_fund = int(allocation) - int(total_spent)
 
     prompt = f"""
     You are a household expense advisor.
