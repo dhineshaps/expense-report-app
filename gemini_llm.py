@@ -44,7 +44,7 @@ def analyze_home_expenses(df_home,home_exp_cat,total_spent,allocation):
     Budget Overview:
     - Total allocated budget: ₹{allocation}
     - Total spent so far: ₹{total_spent}
-    - Remaining budget: ₹{allocation - total_spent}
+    - Remaining budget: ₹{available_fund}
     - Today's date: {today}
     - Days left in this month: {days_remaining}
 
