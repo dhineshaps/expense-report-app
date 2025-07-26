@@ -9,7 +9,6 @@ import textwrap
 from email.mime.multipart import MIMEMultipart
 from langchain_community.vectorstores import FAISS
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-import streamlit as st
 from datetime import date, datetime
 import calendar
 
