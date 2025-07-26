@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 from gspread.exceptions import WorksheetNotFound
 import sys
+from gemini_llm import analyze_home_expenses,analyze_personal_expenses
 
 st.set_page_config(page_title="Expense Tracker", layout="wide")
 
@@ -186,7 +187,7 @@ def get_or_create_worksheet(spreadsheet, sheet_name):
         worksheet.update_acell('H3', 'Total Expense')
         worksheet.update_acell('H4', 'Available')
         worksheet.update_acell('N3', 'Total Expense')
-        orksheet.update_acell('X3', 'Total Investment')
+        worksheet.update_acell('X3', 'Total Investment')
         st.info("Formulas updated")
         st.info("Formatting") 
         set_header_colors(worksheet)
@@ -299,6 +300,7 @@ if authentication_status:
             Available_Fund = sheet.acell('D4').value
             Total_Home_Expense = sheet.acell('J3').value
             Available_Home_Expense_Fund = sheet.acell('I4').value
+            Allocated_home_fund = sheet.acell('G7').value
             Purchase_From_Reserve = sheet.acell('O3').value
             Investment_Made = sheet.acell('Y3').value
             col1, col2 = st.columns(2)
@@ -353,6 +355,20 @@ if authentication_status:
             if not home_exp_cat.empty:
                 with st.expander("View 💰 **Expense by Category**"):
                     st.dataframe(home_exp_cat, use_container_width=True)
+                    groc_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'grocery']['Expense'].sum()
+                    veg_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'Vegetables']['Expense'].sum()
+                    non_veg_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'Non-Veg']['Expense'].sum()
+                    tickets_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'Tickets']['Expense'].sum()
+                    cab_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'Cab']['Expense'].sum()
+                    entertainment_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'Entertainment']['Expense'].sum()
+                    eatables_exp =veg_exp+non_veg_exp
+                    st.write(groc_exp)
+                    st.write(veg_exp)
+                    st.write(non_veg_exp)
+                    st.write(eatables_exp)
+                    st.write(tickets_exp)
+                    st.write(cab_exp)
+                    st.write(entertainment_exp)
         
                 fig = px.bar(home_exp_cat, x="Category", y="Expense", text="Expense", color="Category",
                              title="Home Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
@@ -361,6 +377,8 @@ if authentication_status:
                 st.plotly_chart(fig, use_container_width=True)
             else:
                 st.info("No Home Expense data available.")
+            Total_Home_Expense=int(Total_Home_Expense)   
+            #st.write(analyze_home_expenses(home_exp,home_exp_cat,Total_Home_Expense))
         else:
             st.info("ℹ️ No data found in the selected range for Home Expense.")
         ######################################################################################################
@@ -386,8 +404,84 @@ if authentication_status:
                     st.plotly_chart(fig, use_container_width=True)
                 else:
                     st.info("No Personal Expense data available.")
+                Total_Expense = int(Total_Expense)
+               # st.markdown(analyze_personal_expenses(personal_exp,personal_exp_cat,Total_Expense))
             else:
                 st.info("ℹ️ No data found in the selected range.")
+            ##############################AI Report##############################################################
+
+            st.markdown("---")
+            st.markdown("### 🧠 Generate AI-Powered Reports")
+            st.caption("Click the button below to generate a financial summary based on your expense data.")
+
+            # Centered Button Layout
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                b1, b2 = st.columns(2)
+
+                with b1:
+                    home_clicked = st.button("🏡 Home AI Report", type="primary")
+
+                with b2:
+                    personal_clicked = st.button("👤 Personal AI Report", type="primary")
+
+            # Trigger Actions
+            if home_clicked:
+                with st.spinner("Generating Home Report..."):
+                    home_summary = analyze_home_expenses(home_exp,home_exp_cat,Total_Home_Expense,Allocated_home_fund)  # Replace with your function
+                    st.session_state["home_summary"] = home_summary
+
+            if personal_clicked:
+                with st.spinner("Generating Personal Report..."):
+                    personal_summary = analyze_personal_expenses(personal_exp,personal_exp_cat,Total_Expense)  # Replace with your function
+                    st.session_state["personal_summary"] = personal_summary
+
+            # Expander Sections
+            if "home_summary" in st.session_state:
+                with st.expander("📘 View Home AI Report"):
+                    st.markdown(st.session_state["home_summary"])
+                    st.download_button("💾 Download Home Report", st.session_state["home_summary"], file_name="home_ai_report.txt")
+
+            if "personal_summary" in st.session_state:
+                with st.expander("📘 View Personal AI Report"):
+                    st.markdown(st.session_state["personal_summary"])
+                    st.download_button("💾 Download Personal Report", st.session_state["personal_summary"], file_name="personal_ai_report.txt")
+            
+            # col1, col2 = st.columns(2)
+
+            # with col1:
+            #     if st.button("🏡 Generate Home AI Report", type="primary"):
+            #         with st.spinner("Analyzing home expenses..."):
+            #             st.session_state["home_ai_summary"] = analyze_home_expenses(
+            #                 home_exp,home_exp_cat,Total_Home_Expense
+            #             )
+
+            # with col2:
+            #     if st.button("👤 Generate Personal AI Report", type="primary"):
+            #         with st.spinner("Analyzing personal expenses..."):
+            #             st.session_state["personal_ai_summary"] = analyze_personal_expenses(
+            #                 personal_exp,personal_exp_cat,Total_Expense
+            #             )
+
+            # # Display and download Home Report
+            # if "home_ai_summary" in st.session_state:
+            #     with st.expander("🏡 View Home Expense Report"):
+            #         st.markdown(st.session_state["home_ai_summary"])
+            #         st.download_button(
+            #             "💾 Download Home Report",
+            #             st.session_state["home_ai_summary"],
+            #             file_name="home_expense_report.txt"
+            #         )
+
+            # # Display and download Personal Report
+            # if "personal_ai_summary" in st.session_state:
+            #     with st.expander("👤 View Personal Expense Report"):
+            #         st.markdown(st.session_state["personal_ai_summary"])
+            #         st.download_button(
+            #             "💾 Download Personal Report",
+            #             st.session_state["personal_ai_summary"],
+            #             file_name="personal_expense_report.txt"
+            #         )
 
             ######################################################################################################
             st.subheader("🐖💰 Savings")

@@ -3,3 +3,8 @@ gspread
 streamlit-authenticator==0.2.2
 matplotlib
 plotly
+dotenv
+google.generativeai
+langchain_community
+langchain_google_genai
+tabulate
