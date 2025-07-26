@@ -419,7 +419,7 @@ if authentication_status:
             st.markdown("### 🧠 Generate AI-Powered Reports")
             st.caption("Click the button below to generate a financial summary based on your expense data.")
 
-            # Centered Button Layout
+
             col1, col2, col3 = st.columns([1, 2, 1])
             with col2:
                 b1, b2 = st.columns(2)
@@ -430,18 +430,17 @@ if authentication_status:
                 with b2:
                     personal_clicked = st.button("👤 Personal AI Report", type="primary")
 
-            # Trigger Actions
+
             if home_clicked:
                 with st.spinner("Generating Home Report..."):
-                    home_summary = analyze_home_expenses(home_exp,home_exp_cat,Total_Home_Expense,Allocated_home_fund)  # Replace with your function
-                    st.session_state["home_summary"] = home_summary
+                    home_summary = analyze_home_expenses(home_exp,home_exp_cat,Total_Home_Expense,Allocated_home_fund)
 
             if personal_clicked:
                 with st.spinner("Generating Personal Report..."):
-                    personal_summary = analyze_personal_expenses(personal_exp,personal_exp_cat,Total_Expense)  # Replace with your function
+                    personal_summary = analyze_personal_expenses(personal_exp,personal_exp_cat,Total_Expense)
                     st.session_state["personal_summary"] = personal_summary
 
-            # Expander Sections
+    
             if "home_summary" in st.session_state:
                 with st.expander("📘 View Home AI Report"):
                     st.markdown(st.session_state["home_summary"])
@@ -452,43 +451,6 @@ if authentication_status:
                     st.markdown(st.session_state["personal_summary"])
                     st.download_button("💾 Download Personal Report", st.session_state["personal_summary"], file_name="personal_ai_report.txt")
             
-            # col1, col2 = st.columns(2)
-
-            # with col1:
-            #     if st.button("🏡 Generate Home AI Report", type="primary"):
-            #         with st.spinner("Analyzing home expenses..."):
-            #             st.session_state["home_ai_summary"] = analyze_home_expenses(
-            #                 home_exp,home_exp_cat,Total_Home_Expense
-            #             )
-
-            # with col2:
-            #     if st.button("👤 Generate Personal AI Report", type="primary"):
-            #         with st.spinner("Analyzing personal expenses..."):
-            #             st.session_state["personal_ai_summary"] = analyze_personal_expenses(
-            #                 personal_exp,personal_exp_cat,Total_Expense
-            #             )
-
-            # # Display and download Home Report
-            # if "home_ai_summary" in st.session_state:
-            #     with st.expander("🏡 View Home Expense Report"):
-            #         st.markdown(st.session_state["home_ai_summary"])
-            #         st.download_button(
-            #             "💾 Download Home Report",
-            #             st.session_state["home_ai_summary"],
-            #             file_name="home_expense_report.txt"
-            #         )
-
-            # # Display and download Personal Report
-            # if "personal_ai_summary" in st.session_state:
-            #     with st.expander("👤 View Personal Expense Report"):
-            #         st.markdown(st.session_state["personal_ai_summary"])
-            #         st.download_button(
-            #             "💾 Download Personal Report",
-            #             st.session_state["personal_ai_summary"],
-            #             file_name="personal_expense_report.txt"
-            #         )
-
-            ######################################################################################################
             st.subheader("🐖💰 Savings")
             savings_report = report_Data(7, 18, 19, 20, 21, "Date", "Category", "Amount", "Items") 
             if savings_report:
