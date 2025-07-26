@@ -434,6 +434,7 @@ if authentication_status:
             if home_clicked:
                 with st.spinner("Generating Home Report..."):
                     home_summary = analyze_home_expenses(home_exp,home_exp_cat,Total_Home_Expense,Allocated_home_fund)
+                    st.session_state["home_summary"] = home_summary
 
             if personal_clicked:
                 with st.spinner("Generating Personal Report..."):
@@ -450,7 +451,7 @@ if authentication_status:
                 with st.expander("📘 View Personal AI Report"):
                     st.markdown(st.session_state["personal_summary"])
                     st.download_button("💾 Download Personal Report", st.session_state["personal_summary"], file_name="personal_ai_report.txt")
-            
+            ###########################################################################################################    
             st.subheader("🐖💰 Savings")
             savings_report = report_Data(7, 18, 19, 20, 21, "Date", "Category", "Amount", "Items") 
             if savings_report:
