@@ -361,15 +361,20 @@ if authentication_status:
                     tickets_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'tickets']['Expense'].sum()
                     cab_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'cab']['Expense'].sum()
                     entertainment_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'entertainment']['Expense'].sum()
+                    others_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'others']['Expense'].sum()
                     eatables_exp =veg_exp+non_veg_exp
-                    st.write(groc_exp)
-                    st.write(veg_exp)
-                    st.write(non_veg_exp)
-                    st.write(eatables_exp)
-                    st.write(tickets_exp)
-                    st.write(cab_exp)
-                    st.write(entertainment_exp)
-        
+                    travel_exp = tickets_exp + cab_exp
+                    if(groc_exp > 3000):
+                        st.warning(f"Grocery Budget crossed the limit of 3000")
+                    if(eatables_exp > 3000):
+                        st.warning(f"Vegetables and Non Veg Budget crossed the limit of 3000")
+                    if(travel_exp > 5000):
+                        st.warning(f"Travel Budget crossed the limit of 3000")
+                    if(entertainment_exp > 2000):
+                        st.warning(f"Entertainment Budget crossed the limit of 2000")
+                    if(others_exp > 2000):
+                        st.warning(f"Others Expenses crossed 2000, Please check")
+
                 fig = px.bar(home_exp_cat, x="Category", y="Expense", text="Expense", color="Category",
                              title="Home Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
                 fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
