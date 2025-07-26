@@ -356,11 +356,11 @@ if authentication_status:
                 with st.expander("View 💰 **Expense by Category**"):
                     st.dataframe(home_exp_cat, use_container_width=True)
                     groc_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'grocery']['Expense'].sum()
-                    veg_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'Vegetables']['Expense'].sum()
-                    non_veg_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'Non-Veg']['Expense'].sum()
-                    tickets_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'Tickets']['Expense'].sum()
-                    cab_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'Cab']['Expense'].sum()
-                    entertainment_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'Entertainment']['Expense'].sum()
+                    veg_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'vegetables']['Expense'].sum()
+                    non_veg_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'non-veg']['Expense'].sum()
+                    tickets_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'tickets']['Expense'].sum()
+                    cab_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'cab']['Expense'].sum()
+                    entertainment_exp =home_exp_cat[home_exp_cat['Category'].str.lower() == 'entertainment']['Expense'].sum()
                     eatables_exp =veg_exp+non_veg_exp
                     st.write(groc_exp)
                     st.write(veg_exp)
