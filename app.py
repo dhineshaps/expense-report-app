@@ -320,7 +320,7 @@ if authentication_status:
                 st.metric(label="Investment Made", value=f"₹{Investment_Made}")
          
 
-
+        @st.cache_data(ttl=300)
         def report_Data(sheetNo, col1, col2, col3, col4, colname1, colname2, colname3, colname4):   
             #sheet = get_gspread_client(Sheet)
             spreadsheet = get_gspread_client(Sheet)
