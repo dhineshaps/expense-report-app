@@ -227,7 +227,7 @@ if authentication_status:
             formatted_date = date_input.strftime("%d-%m-%Y")
 
             if page == "Add Home Expense":
-                category = st.selectbox("📂 Category", ("Grocery - Essential","Grocery - Non Essential", "Vegetables", "Fruits", "Gas","Fuel","Dress", "Cab", "Snacks", "Entertainment",
+                category = st.selectbox("📂 Category", ("Grocery - Essential","Grocery - Non Essential","Milk", "Vegetables", "Fruits", "Gas","Fuel","Dress", "Cab", "Snacks", "Entertainment",
                                                          "Tickets", "Rent", "Home Maint","Wifi", "Tea and Snacks", "Food", "Non-Veg", "Pharmacy",
                                                         "Egg", "Personal wellness","Mobile Recharge", "Others"), key="category_input")
             elif page == "Add Personal Expense":
