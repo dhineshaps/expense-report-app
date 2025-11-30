@@ -19,7 +19,7 @@ load_dotenv()
 
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
-model = genai.GenerativeModel("gemini-1.5-flash-latest")
+model = genai.GenerativeModel("gemini-2.5-flash-lite")
 
 
 def analyze_home_expenses(df_home,home_exp_cat,total_spent,allocation):
