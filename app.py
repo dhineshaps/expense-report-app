@@ -37,7 +37,7 @@ if "reset_triggered" in st.session_state and st.session_state.reset_triggered:
 # for key, val in defaults.items():
 #     if key not in st.session_state:
 #         st.session_state[key] = val
-		
+
 # if "reset_triggered" in st.session_state and st.session_state.reset_triggered:
 #     st.session_state.expense_input = ""
 #     st.session_state.items_input = ""
@@ -189,7 +189,7 @@ def get_or_create_worksheet(spreadsheet, sheet_name):
         worksheet.update_acell('N3', 'Total Expense')
         worksheet.update_acell('X3', 'Total Investment')
         st.info("Formulas updated")
-        st.info("Formatting") 
+        st.info("Formatting")
         set_header_colors(worksheet)
         st.info("Formatting Completed")
         return worksheet
@@ -234,7 +234,7 @@ if authentication_status:
                 category = st.selectbox("📂 Category", ("EMI", "Dad", "Vijaya", "Tea and Snacks", "Fruits", "Cab", "Snacks","ATM Withdrawl",
                                                         "Home Snacks", "Home Spend","Book","Entertainment", "Juice", "Donation","Home Fuel", "Tickets",
                                                         "Lent", "Loan Repayment", "Home Maint", "Food", "Non-Veg", "Egg","Dress", "Grooming",
-                                                        "Learnings/Conferences","Pharmacy", "Dental","Mobile Recharge","Personal wellness", "Ecommerce", "Birthday Celebration", 
+                                                        "Learnings/Conferences","Pharmacy", "Dental","Mobile Recharge","Personal wellness", "Ecommerce", "Birthday Celebration",
                                                         "Others"), key="category_input")
             elif page == "Purchase from Reserve":
                 category = st.selectbox("📂 Category", ("Donation", "Lent", "Loan Repayment", "Home Maint", "Personal wellness",
@@ -291,7 +291,7 @@ if authentication_status:
 
     elif page == "Reports":
         st.title("📊 Monthly Report Viewer")
-   
+
         spreadsheet = get_gspread_client(Sheet)
         sheet = get_or_create_worksheet(spreadsheet, Sheet)
         with st.expander(f"{Sheet} Expenses and Investments"):
@@ -318,10 +318,10 @@ if authentication_status:
                 st.metric(label="Purchase From Reserve", value=f"₹{Purchase_From_Reserve}")
             with col2:
                 st.metric(label="Investment Made", value=f"₹{Investment_Made}")
-         
+
 
         @st.cache_data(ttl=300)
-        def report_Data(sheetNo, col1, col2, col3, col4, colname1, colname2, colname3, colname4):   
+        def report_Data(sheetNo, col1, col2, col3, col4, colname1, colname2, colname3, colname4):
             #sheet = get_gspread_client(Sheet)
             spreadsheet = get_gspread_client(Sheet)
             sheet = get_or_create_worksheet(spreadsheet, Sheet)
@@ -329,7 +329,7 @@ if authentication_status:
             col_2 = sheet.col_values(col2)[sheetNo - 1:]
             col_3 = sheet.col_values(col3)[sheetNo - 1:]
             col_4 = sheet.col_values(col4)[sheetNo - 1:]
-            data = list(zip(col_1, col_2, col_3, col_4)) 
+            data = list(zip(col_1, col_2, col_3, col_4))
 
             if data:
                 df = pd.DataFrame(data, columns=[colname1, colname2, colname3, colname4])
@@ -341,17 +341,17 @@ if authentication_status:
                 return df, sum_df
             else:
                 return pd.DataFrame(), pd.DataFrame()
-                
+
         st.subheader("🏠 Home Expenses")
-        
+
         home_report = report_Data(7, 8, 9, 10, 11, "Date", "Category", "Expense", "Items")
         if home_report:
             home_exp, home_exp_cat = home_report
-        
+
             if not home_exp.empty:
                 with st.expander("View the Day to Day Expense"):
                     st.dataframe(home_exp, use_container_width=True)
-        
+
             if not home_exp_cat.empty:
                 with st.expander("View 💰 **Expense by Category**"):
                     st.dataframe(home_exp_cat, use_container_width=True)
@@ -382,26 +382,26 @@ if authentication_status:
                 st.plotly_chart(fig, use_container_width=True)
             else:
                 st.info("No Home Expense data available.")
-            Total_Home_Expense=int(Total_Home_Expense)   
+            Total_Home_Expense=int(Total_Home_Expense)
             #st.write(analyze_home_expenses(home_exp,home_exp_cat,Total_Home_Expense))
         else:
             st.info("ℹ️ No data found in the selected range for Home Expense.")
         ######################################################################################################
         if username == "dhinesh":
             st.subheader("🧑 Personal Expenses")
-            personal_report = report_Data(7, 2, 3, 4, 5, "Date", "Category", "Expense", "Items") 
+            personal_report = report_Data(7, 2, 3, 4, 5, "Date", "Category", "Expense", "Items")
             if personal_report:
-                
+
                 personal_exp, personal_exp_cat = personal_report
-            
+
                 if not personal_exp.empty:
                     with st.expander("View the Personal Day to Day Expense"):
                         st.dataframe(personal_exp, use_container_width=True)
-            
+
                 if not personal_exp_cat.empty:
                     with st.expander("View 💰 **Expense by Category for Personal**"):
                         st.dataframe(personal_exp_cat, use_container_width=True)
-            
+
                     fig = px.bar(personal_exp_cat, x="Category", y="Expense", text="Expense", color="Category",
                                  title="Personal Expenses by Category", labels={"Expense": "₹ Amount", "Category": "Expense Type"})
                     fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
@@ -409,7 +409,7 @@ if authentication_status:
                     st.plotly_chart(fig, use_container_width=True)
                 else:
                     st.info("No Personal Expense data available.")
-                Total_Expense = int(Total_Expense)
+                Total_Expense = float(Total_Expense)
                # st.markdown(analyze_personal_expenses(personal_exp,personal_exp_cat,Total_Expense))
             else:
                 st.info("ℹ️ No data found in the selected range.")
@@ -441,7 +441,7 @@ if authentication_status:
                     personal_summary = analyze_personal_expenses(personal_exp,personal_exp_cat,Total_Expense)
                     st.session_state["personal_summary"] = personal_summary
 
-    
+
             if "home_summary" in st.session_state:
                 with st.expander("📘 View Home AI Report"):
                     st.markdown(st.session_state["home_summary"])
@@ -451,21 +451,21 @@ if authentication_status:
                 with st.expander("📘 View Personal AI Report"):
                     st.markdown(st.session_state["personal_summary"])
                     st.download_button("💾 Download Personal Report", st.session_state["personal_summary"], file_name="personal_ai_report.txt")
-            ###########################################################################################################    
+            ###########################################################################################################
             st.subheader("🐖💰 Savings")
-            savings_report = report_Data(7, 18, 19, 20, 21, "Date", "Category", "Amount", "Items") 
+            savings_report = report_Data(7, 18, 19, 20, 21, "Date", "Category", "Amount", "Items")
             if savings_report:
-            
+
                 savings_data, savings_by_category = savings_report
-            
+
                 if not savings_data.empty:
                     with st.expander("View the Day-to-Day Savings"):
                         st.dataframe(savings_data, use_container_width=True)
-            
+
                 if not savings_by_category.empty:
                     with st.expander("View 💵 **Savings by Category**"):
                         st.dataframe(savings_by_category, use_container_width=True)
-            
+
                     fig = px.bar(savings_by_category, x="Category", y="Amount", text="Amount", color="Category",
                                  title="Savings by Category", labels={"Amount": "₹ Amount", "Category": "Savings Type"})
                     fig.update_traces(texttemplate='₹%{text:.2s}', textposition='outside')
@@ -476,10 +476,10 @@ if authentication_status:
             else:
                 st.info("ℹ️ No data found in the selected range for Savings.")
 
-            ###########################################################################################################    
+            ###########################################################################################################
             st.subheader("💰 Reserve Expense")
-            
-            reserve_report = report_Data(7, 13, 14, 15, 16, "Date", "Category", "Expense", "Items") 
+
+            reserve_report = report_Data(7, 13, 14, 15, 16, "Date", "Category", "Expense", "Items")
             if reserve_report:
                 reserve_exp, reserve_exp_cat = reserve_report
                 if not reserve_exp.empty:
