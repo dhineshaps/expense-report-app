@@ -228,10 +228,10 @@ if authentication_status:
 
             if page == "Add Home Expense":
                 category = st.selectbox("📂 Category", ("Grocery - Essential","Grocery - Non Essential","Milk", "Vegetables", "Fruits", "Gas","Fuel","Dress", "Cab", "Snacks", "Entertainment",
-                                                         "Tickets", "Rent", "Home Maint","Wifi", "Tea and Snacks", "Food", "Non-Veg", "Pharmacy",
+                                                         "Tickets", "Rent", "Home Maint","Wifi","Electricity","Tea and Snacks", "Food", "Non-Veg", "Pharmacy",
                                                         "Egg", "Personal wellness","Mobile Recharge", "Others"), key="category_input")
             elif page == "Add Personal Expense":
-                category = st.selectbox("📂 Category", ("EMI", "Dad", "Vijaya", "Tea and Snacks", "Fruits", "Cab", "Snacks","ATM Withdrawl",
+                category = st.selectbox("📂 Category", ("EMI", "Dad", "Vijaya","Vidhya", "Tea and Snacks", "Fruits", "Cab", "Snacks","ATM Withdrawl",
                                                         "Home Snacks", "Home Spend","Book","Entertainment", "Juice", "Donation","Home Fuel", "Tickets",
                                                         "Lent", "Loan Repayment", "Home Maint", "Food", "Non-Veg", "Egg","Dress", "Grooming",
                                                         "Learnings/Conferences","Pharmacy", "Dental","Mobile Recharge","Personal wellness", "Ecommerce", "Birthday Celebration",
