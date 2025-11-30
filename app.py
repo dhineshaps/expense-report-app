@@ -409,7 +409,7 @@ if authentication_status:
                     st.plotly_chart(fig, use_container_width=True)
                 else:
                     st.info("No Personal Expense data available.")
-                Total_Expense = float(Total_Expense)
+                Total_Expense = float(Total_Expense) #test
                # st.markdown(analyze_personal_expenses(personal_exp,personal_exp_cat,Total_Expense))
             else:
                 st.info("ℹ️ No data found in the selected range.")
