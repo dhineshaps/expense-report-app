@@ -294,6 +294,27 @@ if authentication_status:
 
         spreadsheet = get_gspread_client(Sheet)
         sheet = get_or_create_worksheet(spreadsheet, Sheet)
+        
+        #working
+        ################### New Feature to list as drop down to see previous expenses######################
+        all_worksheets = spreadsheet.worksheets()
+        list_sheets = []
+        for sheet in all_worksheets:
+            #print(f"- {sheet.title}")
+            list_sheets.append(sheet.title)
+        print(list_sheets)
+        option = st.selectbox(
+                "Select the Year to view the expense",
+                list_sheets,
+            )
+        print(option)
+
+        
+        
+        sheet = get_or_create_worksheet(spreadsheet, option)
+        Sheet = option
+
+        ################### New Feature to list as drop down to see previous expenses######################
         with st.expander(f"{Sheet} Expenses and Investments"):
         #st.subheader(f"{Sheet} Expenses and Investments")
             Total_Expense = sheet.acell('D3').value
@@ -322,7 +343,6 @@ if authentication_status:
 
         @st.cache_data(ttl=300)
         def report_Data(sheetNo, col1, col2, col3, col4, colname1, colname2, colname3, colname4):
-            #sheet = get_gspread_client(Sheet)
             spreadsheet = get_gspread_client(Sheet)
             sheet = get_or_create_worksheet(spreadsheet, Sheet)
             col_1 = sheet.col_values(col1)[sheetNo - 1:]
