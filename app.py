@@ -293,7 +293,7 @@ if authentication_status:
         st.title("📊 Monthly Report Viewer")
 
         spreadsheet = get_gspread_client(Sheet)
-        sheet = get_or_create_worksheet(spreadsheet, Sheet)
+        #sheet = get_or_create_worksheet(spreadsheet, Sheet)
         
         #working
         ################### New Feature to list as drop down to see previous expenses######################
@@ -302,10 +302,9 @@ if authentication_status:
         for sheet in all_worksheets:
             #print(f"- {sheet.title}")
             list_sheets.append(sheet.title)
-        print(list_sheets)
         option = st.selectbox(
-                "Select the Year to view the expense",
-                list_sheets,
+                "Select the Month_Year to view the expense",
+                list_sheets, index=len(list_sheets)-1
             )
         print(option)
 
@@ -341,10 +340,12 @@ if authentication_status:
                 st.metric(label="Investment Made", value=f"₹{Investment_Made}")
 
 
-        @st.cache_data(ttl=300)
+        @st.cache_data(ttl=50)
         def report_Data(sheetNo, col1, col2, col3, col4, colname1, colname2, colname3, colname4):
+            
             spreadsheet = get_gspread_client(Sheet)
             sheet = get_or_create_worksheet(spreadsheet, Sheet)
+
             col_1 = sheet.col_values(col1)[sheetNo - 1:]
             col_2 = sheet.col_values(col2)[sheetNo - 1:]
             col_3 = sheet.col_values(col3)[sheetNo - 1:]
@@ -367,10 +368,13 @@ if authentication_status:
         home_report = report_Data(7, 8, 9, 10, 11, "Date", "Category", "Expense", "Items")
         if home_report:
             home_exp, home_exp_cat = home_report
+            home_sum_Exp = (home_exp['Expense'].sum())
+            st.metric(label="Total Home Expense", value=f"Rs. {home_sum_Exp}",delta_color="inverse")
 
             if not home_exp.empty:
                 with st.expander("View the Day to Day Expense"):
                     st.dataframe(home_exp, use_container_width=True)
+        
 
             if not home_exp_cat.empty:
                 with st.expander("View 💰 **Expense by Category**"):
@@ -402,7 +406,7 @@ if authentication_status:
                 st.plotly_chart(fig, use_container_width=True)
             else:
                 st.info("No Home Expense data available.")
-            Total_Home_Expense=int(Total_Home_Expense)
+            Total_Home_Expense=float(Total_Home_Expense)
             #st.write(analyze_home_expenses(home_exp,home_exp_cat,Total_Home_Expense))
         else:
             st.info("ℹ️ No data found in the selected range for Home Expense.")
@@ -413,6 +417,8 @@ if authentication_status:
             if personal_report:
 
                 personal_exp, personal_exp_cat = personal_report
+                personal_exp_sum = personal_exp['Expense'].sum()
+                st.metric(label="Total Personal Expense", value=f"Rs. {personal_exp_sum}")
 
                 if not personal_exp.empty:
                     with st.expander("View the Personal Day to Day Expense"):
